@@ -8,10 +8,10 @@ using UnityEngine.UI;
 public class Manager : MonoBehaviour
 {
     [SerializeField]
-    private Image edgePrefab;
+    public Image edgePrefab;
 
     [SerializeField]
-    private Transform parentEdge;
+    public Transform parentEdge;
 
     [SerializeField]
     private GameObject rectanglePrefab;
@@ -33,7 +33,7 @@ public class Manager : MonoBehaviour
     public TextMeshProUGUI valueFriendship;
 
     [SerializeField]
-    private int[][] matrixAdj;
+    public int[][] matrixAdj;
 
     // Start is called before the first frame update
     void Start()
@@ -42,21 +42,6 @@ public class Manager : MonoBehaviour
         speedSlider.onValueChanged.AddListener(UpdateSpeedValue);
 
         graph ??= new List<Node>();
-
-        int numNodes = graph.Count;
-
-        matrixAdj = new int[numNodes][];
-
-        for (int i = 0; i < numNodes; i++)
-        {
-            matrixAdj[i] = new int[numNodes];
-            graph[i].setId(i);
-
-            for (int j = 0; j < numNodes; j++)
-            {
-                matrixAdj[i][j] = 0;
-            }
-        }
 
         SetAdj();
     }
@@ -84,6 +69,22 @@ public class Manager : MonoBehaviour
 
     public void SetAdj()
     {
+
+        int numNodes = graph.Count;
+
+        matrixAdj = new int[numNodes][];
+
+        for (int i = 0; i < numNodes; i++)
+        {
+            matrixAdj[i] = new int[numNodes];
+            graph[i].setId(i);
+
+            for (int j = 0; j < numNodes; j++)
+            {
+                matrixAdj[i][j] = 0;
+            }
+        }
+
         foreach (Node node in graph)
         {
             int currentNodeId = node.getId();
