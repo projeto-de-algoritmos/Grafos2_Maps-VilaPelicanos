@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections.Generic;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,6 +32,31 @@ public class MenuCustomize : EditorWindow
 
     }
 
+    [MenuItem("Grafo/Atualiza as novas arestas")]
+    public static void UpdateEdges()
+    {
+        GameObject manager = GameObject.Find("Manager");
+
+        if (manager.GetComponent<Manager>())
+            UpdateEdge(manager.GetComponent<Manager>());
+        else
+            Debug.Log("Objeto 'Manager' nao encontrado");
+
+    }
+
+    public static void UpdateEdge(Manager manager)
+    {
+        foreach (Node node in manager.graph)
+        {
+            foreach (Node edge in node.getNodesAdj())
+            {
+                node.AddEdge(edge, Vector2.Distance(edge.transform.transform.position, node.transform.position));
+            }
+        }
+
+        Debug.Log("Update complete");
+    }
+
     public static void DeleteEdges(Manager manager)
     {
         int secury = 0;
@@ -39,6 +65,8 @@ public class MenuCustomize : EditorWindow
             secury++;
             DestroyImmediate(manager.parentEdge.GetChild(0).gameObject);
         }
+
+        Debug.Log("Delete complete");
     }
 
     public static void SetEdges(Manager manager)
@@ -64,8 +92,9 @@ public class MenuCustomize : EditorWindow
         {
             int currentNodeId = node.getId();
 
-            foreach (Node adjNode in node.getNodesAdj())
+            foreach (Node edge in node.Edges.Keys)
             {
+                Node adjNode = edge;
                 int adjNodeId = adjNode.getId();
 
                 manager.matrixAdj[currentNodeId][adjNodeId] = 1;
@@ -99,5 +128,7 @@ public class MenuCustomize : EditorWindow
                 }
             }
         }
+
+        Debug.Log("SetEdge complete");
     }
 }

@@ -9,11 +9,29 @@ public class Node : MonoBehaviour
     private int id;
 
     [SerializeField]
-    private List<Node> nodesAdj = new();
+    private Dictionary<Node, float> edges = new();
 
     public Game game;
 
     private Button button;
+
+    public Dictionary<Node, float> Edges
+    {
+        get { return edges; }
+        set { edges = value; }
+    }
+
+    public void AddEdge(Node node, float distance)
+    {
+        Dictionary<Node, float> edge = new Dictionary<Node, float>();
+        edges.Add(node, distance);
+    }
+
+    public bool ContainsNode(Node node)
+    {
+        return edges.ContainsKey(node);
+    }
+
 
     private void Start()
     {
@@ -32,28 +50,10 @@ public class Node : MonoBehaviour
         id = _id;
     }
 
-    public List<Node> getNodesAdj()
-    {
-        return nodesAdj;
-    }
-
-    public void setNodeAdj(Node node)
-    {
-        nodesAdj.Add(node);
-    }
-
-    public bool isAdjacente(Node node)
-    {
-        return nodesAdj.Contains(node) && node != this;
-    }
-
-    public void setNodesAdj(List<Node> nodes)
-    {
-        nodesAdj = nodes;
-    }
-
     public void ClickNode()
     {
         game.SelectionNode(this);
     }
+
+    
 }
