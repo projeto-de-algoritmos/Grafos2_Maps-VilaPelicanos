@@ -2,78 +2,116 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class AlgorithmBFS : MonoBehaviour
 {
     [SerializeField]
     private Manager manager;
-    private List<Node> newGraph = new();
+    private List<NewNode> newGraph = new();
 
     struct NewNode
     {
-        public Dictionary<int, int> ids;
+        public Tuple<Node, Node> node;
+        public List<NewNode> nodesAdj;
 
-        public List<NewNode> newNodes;
+        public NewNode(Tuple<Node, Node> node)
+        {
+            this.node = node;
+            this.nodesAdj = new List<NewNode>();
+        }
     }
 
-    public List<Node> BFS(List<Node> nodes, Node s, Node t)
-    {   // Complexidade operacao O(n+m)
+    private NewNode Add_Node(Node node1, Node node2)
+    {
+        Tuple<Node, Node> node = Tuple.Create(node1, node2);
 
-        int[] visited = new int[nodes.Count];
-        Array.Fill(visited, -1);
+        NewNode newNode = new NewNode(node);
 
-        Queue<Node> queue = new();
-        List<Node> path = new();
+        if (!newGraph.Contains(newNode))
+        {
+            newGraph.Add(newNode);
+            return newNode;
+        }
+        return newGraph[newGraph.IndexOf(newNode)];
+    }
 
-        visited[s.getId()] = s.getId();
+    private void Add_Edge(NewNode node1, NewNode node2)
+    {
+        if (!node1.nodesAdj.Contains(node2))
+        {
+            node1.nodesAdj.Add(node2);
+        }
+    }
 
-        queue.Enqueue(s);
+    public void Filter(List<Node> graph, Node s, Node t, int min)
+    {
+        NewNode newNode = Add_Node(s, t);
+
+        Queue<NewNode> queue = new();
+        queue.Enqueue(newNode);
 
         while (queue.Any())
-        {   // Complexidade operacao O(n), considerando que todos os nos serao emfileirados uma unica vez
+        {
+            newNode = queue.Dequeue();
 
-            Node node = queue.Dequeue();
+            s = newNode.node.Item1;
+            t = newNode.node.Item2;
 
-            foreach (Node nodeAdj in node.getNodesAdj())
-            {   // Complexidade operacao O(m), O(deg(nodeAdj)) para cada vertice, no pior caso percorre todos os nos, sendo um somatorio dos graus de cada no igual a 2m
-
-                int id = nodeAdj.getId();
-
-                if (visited[id] == -1)
+            for (Node node = s; ; node = t)
+            {
+                foreach (Node nodeAdj in node.Edges.Keys)
                 {
-                    visited[id] = node.getId();
-                    queue.Enqueue(nodeAdj);
+                    List<Node> path = new();
+                    NewNode no = new();
 
-                    if (nodeAdj.Equals(t))
+                    if (node.Equals(s))
                     {
-                        Node temp = t;
-
-                        while (!temp.Equals(s))
-                        {   // O(n), pois pode no maximo passar por todos os nos para chegar ao destino
-
-                            path.Insert(0, temp);
-                            temp = nodes[visited[temp.getId()]];
-
-                        }
-                        path.Insert(0, s);
-                        return path;
+                        path = Dijkstra(graph, nodeAdj, t);    // passar o djkstra para ver se a distancia entre os dois pontos não é menor que o permitido
+                        if (path.Count <= min) continue;
+                        no = Add_Node(nodeAdj, t);
                     }
+                    else
+                    {
+                        path = Dijkstra(graph, s, nodeAdj);
+                        if (path.Count <= min) continue;
+                        no = Add_Node(t, nodeAdj);
+                    }
+
+                    Add_Edge(newNode, no);
+
+                    if (!newGraph.Contains(no))
+                    {
+                        queue.Enqueue(no);
+                    }
+
                 }
+
+                if (node.Equals(t)) break;
+
             }
+
         }
 
-        return new List<Node>(); // Retorna uma lista vazia quando nao ha caminho entre s e t
+    }
+
+    public void Dijkstra(int origem)
+    {
+        PriorityQueue<Node, float> filaPrioridade = new PriorityQueue<Node, float>();
+
     }
 
     public void Start()
     {
-        //StartCoroutine(startAlgorithm());
+        StartCoroutine(startAlgorithm());
     }
 
     IEnumerator startAlgorithm()
     {
         yield return new WaitForSeconds(5);
+
+        Filter(manager.graph, manager.graph[47], manager.graph[4], 5);
 
         List<Node> caminho = BFS(manager.graph, manager.graph[47], manager.graph[4]);
 
