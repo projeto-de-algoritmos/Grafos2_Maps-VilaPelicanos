@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class AlgorithmBFS : MonoBehaviour
 {
+    
     [SerializeField]
     private Manager manager;
     private List<NewNode> newGraph = new();
@@ -45,7 +46,7 @@ public class AlgorithmBFS : MonoBehaviour
         }
     }
 
-    public void Filter(List<Node> graph, Node s, Node t, int min)
+    public void Filter(List<Node> graph, Node s, Node t, float min)
     {
         NewNode newNode = Add_Node(s, t);
 
@@ -63,19 +64,19 @@ public class AlgorithmBFS : MonoBehaviour
             {
                 foreach (Node nodeAdj in node.Edges.Keys)
                 {
-                    List<Node> path = new();
+                    float path;
                     NewNode no = new();
 
                     if (node.Equals(s))
                     {
-                        path = Dijkstra(graph, nodeAdj, t);    // passar o djkstra para ver se a distancia entre os dois pontos não é menor que o permitido
-                        if (path.Count <= min) continue;
+                        path = Vector2.Distance(nodeAdj.transform.position, t.transform.position);    // passar o djkstra para ver se a distancia entre os dois pontos não é menor que o permitido
+                        if (path <= min) continue;
                         no = Add_Node(nodeAdj, t);
                     }
                     else
                     {
-                        path = Dijkstra(graph, s, nodeAdj);
-                        if (path.Count <= min) continue;
+                        path = Vector2.Distance(nodeAdj.transform.position, t.transform.position);    // passar o djkstra para ver se a distancia entre os dois pontos não é menor que o permitido
+                        if (path <= min) continue;
                         no = Add_Node(t, nodeAdj);
                     }
 
@@ -89,16 +90,15 @@ public class AlgorithmBFS : MonoBehaviour
                 }
 
                 if (node.Equals(t)) break;
-
             }
-
         }
-
     }
 
     public void Dijkstra(int origem)
     {
-        PriorityQueue<Node, float> filaPrioridade = new PriorityQueue<Node, float>();
+        //PriorityQueue<Node, float> filaPrioridade = new PriorityQueue<Node, float>();
+
+       
 
     }
 
@@ -113,11 +113,13 @@ public class AlgorithmBFS : MonoBehaviour
 
         Filter(manager.graph, manager.graph[47], manager.graph[4], 5);
 
-        List<Node> caminho = BFS(manager.graph, manager.graph[47], manager.graph[4]);
+        /*
+        List<Node> caminho; = BFS(manager.graph, manager.graph[47], manager.graph[4]);
 
         foreach (Node node in caminho)
         {
             Debug.Log(node.getId() + "->");
         }
+        */
     }
 }

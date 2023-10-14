@@ -32,6 +32,7 @@ public class MenuCustomize : EditorWindow
 
     }
 
+    /*
     [MenuItem("Grafo/Atualiza as novas arestas")]
     public static void UpdateEdges()
     {
@@ -56,6 +57,7 @@ public class MenuCustomize : EditorWindow
 
         Debug.Log("Update complete");
     }
+    */
 
     public static void DeleteEdges(Manager manager)
     {
@@ -95,13 +97,15 @@ public class MenuCustomize : EditorWindow
             foreach (Node edge in node.Edges.Keys)
             {
                 Node adjNode = edge;
+                float peso = node.Edges[edge];
+
                 int adjNodeId = adjNode.getId();
 
                 manager.matrixAdj[currentNodeId][adjNodeId] = 1;
 
-                if (!adjNode.isAdjacente(node))
+                if (!adjNode.ContainsNode(node))
                 {
-                    adjNode.setNodeAdj(node);
+                    adjNode.AddEdge(node, peso);
                 }
 
                 if (manager.matrixAdj[adjNodeId][currentNodeId] != 1)

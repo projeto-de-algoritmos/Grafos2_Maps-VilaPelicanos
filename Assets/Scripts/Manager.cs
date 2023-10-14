@@ -52,10 +52,13 @@ public class Manager : MonoBehaviour
 
     public void StartGame()
     {
+        /*
         List<Node> nodes = algorithBFS.BFS(graph, startCharacter01, endCharacter01);
 
         if (nodes.Count != 0)
             game.CreateCharacter(nodes[0], nodes);
+
+        */
     }
 
     // Função chamada quando o valor do slider é alterado.
