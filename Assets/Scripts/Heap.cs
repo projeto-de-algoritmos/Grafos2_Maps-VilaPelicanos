@@ -25,7 +25,7 @@ public class Heap
 
     public Heap(int _max)
     {
-        max = _max;
+        max = _max + 1;
         last = 0;
         priorityQueue = new ElementQueue[max];
         hash = new Dictionary<ElementQueue, int>();
@@ -38,22 +38,25 @@ public class Heap
         set { priorityQueue = value; }
     }
 
-    public void Enqueue(Node node1, Node node2, float _value)
+    public int Last
     {
-        if (last == max)        
-            throw new InvalidOperationException("Tamanho maximo atingido");     
-        
-        int id1 = node1.Id;
-        int id2 = node2.Id;
+        get { return last; }
+        set { last = value; }
+    }
 
-        Tuple<int, int> newNodes = new Tuple<int, int>(id1, id2);
+    public int Enqueue(int node1, int node2, float _value)
+    {
+        if (last == max - 1)
+            return -1;
+
+        Tuple<int, int> newNodes = new Tuple<int, int>(node1, node2);
         ElementQueue newElement = new(newNodes, _value);
 
         if (hash.ContainsKey(newElement))
         {
             if (hash[newElement] == -1)
             {
-                return;
+                return 0;
             }
 
             if (priorityQueue[hash[newElement]].value > newElement.value)
@@ -71,12 +74,14 @@ public class Heap
             int pos = ShiftUp(last);
             hash.Add(newElement, pos);
         }
+
+        return 0;
     }
 
     public ElementQueue Dequeue()
     {
         if (last == 0)
-            throw new InvalidOperationException("Nenhum item na lista");
+            return new ElementQueue(Tuple.Create(-1, -1), (int)-1);
 
         Swap(1, last);
         
@@ -130,6 +135,6 @@ public class Heap
     private void Swap(int a, int b)
     {
         (priorityQueue[a], priorityQueue[b]) =
-            (priorityQueue[a], priorityQueue[b]);
+            (priorityQueue[b], priorityQueue[a]);
     }
 }
