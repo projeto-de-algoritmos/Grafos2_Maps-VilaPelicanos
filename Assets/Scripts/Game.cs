@@ -68,12 +68,12 @@ public class Game : MonoBehaviour
     {
         if (selectionChar == 1) 
         {
-            startNode01.text = node.getId().ToString();
+            startNode01.text = node.Id.ToString();
             manager.startCharacter01 = node;
         }
         else if (selectionChar == 2)
         {
-            startNode02.text = node.getId().ToString();
+            startNode02.text = node.Id.ToString();
             manager.startCharacter02 = node;
         }
     }
@@ -82,12 +82,12 @@ public class Game : MonoBehaviour
     {
         if (selectionChar == 1)
         {
-            endNode01.text = node.getId().ToString();
+            endNode01.text = node.Id.ToString();
             manager.endCharacter01 = node;
         }
         else if (selectionChar == 2)
         {
-            endNode02.text = node.getId().ToString();
+            endNode02.text = node.Id.ToString();
             manager.endCharacter02 = node;
         }
     }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.IO.LowLevel.Unsafe;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
@@ -96,10 +97,8 @@ public class AlgorithmBFS : MonoBehaviour
 
     public void Dijkstra(int origem)
     {
-        //PriorityQueue<Node, float> filaPrioridade = new PriorityQueue<Node, float>();
-
-       
-
+        
+        
     }
 
     public void Start()

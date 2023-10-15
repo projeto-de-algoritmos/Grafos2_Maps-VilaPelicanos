@@ -82,7 +82,7 @@ public class MenuCustomize : EditorWindow
         for (int i = 0; i < numNodes; i++)
         {
             manager.matrixAdj[i] = new int[numNodes];
-            manager.graph[i].setId(i);
+            manager.graph[i].Id = i;
 
             for (int j = 0; j < numNodes; j++)
             {
@@ -92,14 +92,14 @@ public class MenuCustomize : EditorWindow
 
         foreach (Node node in manager.graph)
         {
-            int currentNodeId = node.getId();
+            int currentNodeId = node.Id;
 
             foreach (Node edge in node.Edges.Keys)
             {
                 Node adjNode = edge;
                 float peso = node.Edges[edge];
 
-                int adjNodeId = adjNode.getId();
+                int adjNodeId = adjNode.Id;
 
                 manager.matrixAdj[currentNodeId][adjNodeId] = 1;
 

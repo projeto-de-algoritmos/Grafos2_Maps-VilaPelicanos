@@ -40,14 +40,10 @@ public class Node : MonoBehaviour
         button.onClick.AddListener(ClickNode);
     }
 
-    public int getId()
+    public int Id
     {
-        return id;
-    }
-
-    public void setId(int _id)
-    {
-        id = _id;
+        get { return id; }
+        set { id = value; }
     }
 
     public void ClickNode()
