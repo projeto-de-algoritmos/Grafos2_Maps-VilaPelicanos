@@ -70,15 +70,15 @@ public class AlgorithmBFS : MonoBehaviour
 
                     if (node.Equals(s))
                     {
-                        path = Vector2.Distance(nodeAdj.transform.position, t.transform.position);    // passar o djkstra para ver se a distancia entre os dois pontos não é menor que o permitido
+                        path = Distance(nodeAdj, t);
                         if (path <= min) continue;
                         no = Add_Node(nodeAdj, t);
                     }
                     else
                     {
-                        path = Vector2.Distance(nodeAdj.transform.position, t.transform.position);    // passar o djkstra para ver se a distancia entre os dois pontos não é menor que o permitido
+                        path = Distance(nodeAdj, s);
                         if (path <= min) continue;
-                        no = Add_Node(t, nodeAdj);
+                        no = Add_Node(s, nodeAdj);
                     }
 
                     Add_Edge(newNode, no);
@@ -99,6 +99,16 @@ public class AlgorithmBFS : MonoBehaviour
     {
         
         
+    }
+
+    private float Distance(Tuple<Node, Node> element)
+    {
+        return Vector2.Distance(element.Item1.transform.position, element.Item2.transform.position);
+    }
+
+    private float Distance(Node node1, Node node2)
+    {
+        return Vector2.Distance(node1.transform.position, node2.transform.position);
     }
 
     public void Start()
