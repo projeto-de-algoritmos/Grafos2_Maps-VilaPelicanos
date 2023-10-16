@@ -100,13 +100,9 @@ public class AlgorithmBFS : MonoBehaviour
     }
     public void Dijkstra(Tuple<Node, Node> start, Tuple<Node, Node> end)
     {
-        int[] distancia = new int[newGraph.Count];
-        for (int i = 0; i < newGraph.Count; i++)
-        {
-            distancia[i] = int.MaxValue;
-        }
-
-        distancia[newGraph[0].id] = 0;
+        Dictionary<Tuple<NewNode, float>, NewNode> minDistance;
+        
+        minDistance.Add(Tuple.Create(start, end), 0);
 
         // adiciona o menor na distancia 
 
