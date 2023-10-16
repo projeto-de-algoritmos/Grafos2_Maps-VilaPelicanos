@@ -33,13 +33,11 @@ public class Node : MonoBehaviour
         edges = new Dictionary<Node, float>();
     }
 
-    public float AddEdge(Node node, float distance)
+    public void AddEdge(Node node, float distance)
     {
         edges ??= new Dictionary<Node, float>();
 
         edges.Add(node, distance);
-
-        return edges[node];
     }
 
     public bool ContainsNode(Node node)
