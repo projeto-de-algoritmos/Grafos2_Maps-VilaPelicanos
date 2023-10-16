@@ -33,6 +33,12 @@ public class Heap
         set { last = value; }
     }
 
+    public Dictionary<AlgorithmBFS.NewNode, int> Hash
+    {
+        get { return hash; }
+        set { hash = value; }
+    }
+
     public int Enqueue(AlgorithmBFS.NewNode newElement)
     {
         if (last == max - 1)
