@@ -15,6 +15,7 @@ public class HeapTest : MonoBehaviour
         Debug.Log(Test02());
         Debug.Log(Test03());
         Debug.Log(Test04());
+        Debug.Log(Test05());
 
         Debug.Log("-- END TESTES HEAP --");
     }
@@ -25,6 +26,12 @@ public class HeapTest : MonoBehaviour
         return nodeReturn;
     }
 
+    private AlgorithmBFS.NewNode CreateElement(Node node1, Node node2, float distance)
+    {
+        AlgorithmBFS.NewNode newNode = new(Tuple.Create(node1, node2, distance), 1);
+        return newNode;
+    }
+
     private string Test01()
     {
         string response = "Test01: ";
@@ -32,22 +39,22 @@ public class HeapTest : MonoBehaviour
         int maxSize = 10;
         Heap heap = new(maxSize);
 
-        heap.Enqueue(CreateElement(3.2f));
-        heap.Enqueue(CreateElement(2.2f));
-        heap.Enqueue(CreateElement(4.0f));
-        heap.Enqueue(CreateElement(4.8f));
-        heap.Enqueue(CreateElement(1.2f));
-        heap.Enqueue(CreateElement(3.9f));
-        heap.Enqueue(CreateElement(4.0f));
-        heap.Enqueue(CreateElement(4.0f));
-        heap.Enqueue(CreateElement(.5f));
-        heap.Enqueue(CreateElement(9.1f));
+        heap.Enqueue(CreateElement(3.2f), 3.2f);
+        heap.Enqueue(CreateElement(2.2f), 2.2f);
+        heap.Enqueue(CreateElement(4.0f), 4.0f);
+        heap.Enqueue(CreateElement(4.8f), 4.8f);
+        heap.Enqueue(CreateElement(1.2f), 1.2f);
+        heap.Enqueue(CreateElement(3.9f), 3.9f);
+        heap.Enqueue(CreateElement(4.0f), 4.0f);
+        heap.Enqueue(CreateElement(4.0f), 4.0f);
+        heap.Enqueue(CreateElement(.5f), .5f);
+        heap.Enqueue(CreateElement(9.1f), 9.1f);
 
         float value = -1;
 
         for (int i = 0; i < maxSize; i++)
         {
-            float nextValue = heap.Dequeue().node.Item3;
+            float nextValue = heap.Dequeue();
 
             if (nextValue < value)
             {
@@ -65,9 +72,9 @@ public class HeapTest : MonoBehaviour
         int maxSize = 2;
         Heap heap = new(maxSize);
 
-        heap.Enqueue(CreateElement(3.5f));
-        heap.Enqueue(CreateElement(2.2f));
-        int result = heap.Enqueue(CreateElement(4.0f));
+        heap.Enqueue(CreateElement(3.5f), 3.5f);
+        heap.Enqueue(CreateElement(2.2f), 2.2f);
+        int result = heap.Enqueue(CreateElement(4.0f), 4.0f);
 
         if (result == -1)
             return response + successTest;
@@ -82,14 +89,14 @@ public class HeapTest : MonoBehaviour
         int maxSize = 2;
         Heap heap = new(maxSize);
 
-        heap.Enqueue(CreateElement(3.5f));
-        heap.Enqueue(CreateElement(2.2f));
-        heap.Enqueue(CreateElement(4.0f));
+        heap.Enqueue(CreateElement(3.5f), 3.5f);
+        heap.Enqueue(CreateElement(2.2f), 2.2f);
+        heap.Enqueue(CreateElement(4.0f), 4.0f);
         int result = 0;
 
         for (int i = 0; i < maxSize + 1; i++)
         {
-            result = (int)heap.Dequeue().node.Item3;
+            result = (int)heap.Dequeue();
         }
 
         if (result == -1)
@@ -105,22 +112,22 @@ public class HeapTest : MonoBehaviour
         int maxSize = 10;
         Heap heap = new(maxSize);
 
-        heap.Enqueue(CreateElement(3.5f));
-        heap.Enqueue(CreateElement(2.2f));
-        heap.Enqueue(CreateElement(4.0f));
-        heap.Enqueue(CreateElement(4.8f));
-        heap.Enqueue(CreateElement(1.2f));
-        heap.Enqueue(CreateElement(3.9f));
-        heap.Enqueue(CreateElement(4.0f));
-        heap.Enqueue(CreateElement(4.0f));
-        heap.Enqueue(CreateElement(.5f));
-        heap.Enqueue(CreateElement(9.1f));
+        heap.Enqueue(CreateElement(3.5f), 3.5f);
+        heap.Enqueue(CreateElement(2.2f), 2.2f);
+        heap.Enqueue(CreateElement(4.0f), 4.0f);
+        heap.Enqueue(CreateElement(4.8f), 4.8f);
+        heap.Enqueue(CreateElement(1.2f), 1.2f);
+        heap.Enqueue(CreateElement(3.9f), 3.9f);
+        heap.Enqueue(CreateElement(4.0f), 4.0f);
+        heap.Enqueue(CreateElement(4.0f), 4.0f);
+        heap.Enqueue(CreateElement(.5f), .5f);
+        heap.Enqueue(CreateElement(9.1f), 9.1f);
 
         float value = -1;
 
         for (int i = 0; i < maxSize - 4; i++)
         {
-            float nextValue = heap.Dequeue().node.Item3;
+            float nextValue = heap.Dequeue();
 
             if (nextValue < value)
             {
@@ -128,17 +135,17 @@ public class HeapTest : MonoBehaviour
             }
         }
 
-        heap.Enqueue(CreateElement(4.0f));
-        heap.Enqueue(CreateElement(4.1f));
-        heap.Enqueue(CreateElement(.2f));
-        heap.Enqueue(CreateElement(14.3f));
+        heap.Enqueue(CreateElement(4.0f), 4.0f);
+        heap.Enqueue(CreateElement(4.1f), 4.1f);
+        heap.Enqueue(CreateElement(.2f), .2f);
+        heap.Enqueue(CreateElement(14.3f), 14.3f);
 
         int last = heap.Last;
         value = -1;
 
         for (int i = 0; i < last; i++)
         {
-            float nextValue = heap.Dequeue().node.Item3;
+            float nextValue = heap.Dequeue();
 
             if (nextValue < value)
             {
@@ -147,5 +154,32 @@ public class HeapTest : MonoBehaviour
         }
 
         return response + successTest;
+    }
+
+    private string Test05()
+    {
+        string response = "Test05: ";
+
+        int maxSize = 10;
+        Heap heap = new(maxSize);
+
+        Node node1 = new Node();
+        node1.Id = 1;
+        Node node2 = new Node();
+        node2.Id = 2;
+
+        heap.Enqueue(CreateElement(node1, node2, 3.5f), 3.5f);
+        heap.Dequeue();
+        int result = heap.Enqueue(CreateElement(node1, node2, 2.2f), 2.2f);
+
+        if (result != 1)
+            return response + failTest + "-> Expected: 2 | " + result;
+
+        result = heap.Enqueue(CreateElement(node2, node1, 4.0f), 4.0f);
+        if (result != 0)
+            return response + failTest + ": 2";
+
+        return response + failTest;
+
     }
 }

@@ -41,6 +41,7 @@ public class AlgorithmBFS : MonoBehaviour
         if (!newGraph.Contains(newNode))
         {
             newGraph.Add(newNode);
+            Debug.Log(newGraph.Count);
             return newNode;
         }
         return newGraph[newGraph.IndexOf(newNode)];
@@ -112,21 +113,23 @@ public class AlgorithmBFS : MonoBehaviour
         minDistance.Add(Tuple.Create(newGraph[0], 0f), newGraph[0]);
         
         Heap heap = new(newGraph.Count);
-        heap.Enqueue(newGraph[0]);
+        heap.Enqueue(newGraph[0], 0f);
         
         while (heap.Last > 0)
         {
-            NewNode node = heap.Dequeue();
+            NewNode node = newGraph[heap.Dequeue()];
             
             foreach (NewNode edge in node.nodesAdj)
             {   
                 int pos = -1;
                 //NewNode key = heap.Hash.FirstOrDefault(x => x.Key.node.Item1.Equals(edge.node.Item1) && x.Key.node.Item2.Equals(edge.node.Item2)).Key;
                 
+                /*
                 if (heap.Hash.ContainsKey(edge))
                 {
                     pos = heap.Hash[edge];
                 }
+                */
 
                 float newDistance = node.node.Item3 + edge.node.Item3;
 
@@ -135,16 +138,16 @@ public class AlgorithmBFS : MonoBehaviour
                     minDistance.Add(Tuple.Create(edge, newDistance), node);
 
                 }
-                else if (newDistance < heap.PriorityQueue[pos].node.Item3)
+                else if (newDistance < heap.PriorityQueue[pos].Item2)
                 {
-                    minDistance.Remove(Tuple.Create(edge, heap.PriorityQueue[pos].node.Item3)); 
+                    minDistance.Remove(Tuple.Create(edge, heap.PriorityQueue[pos].Item2)); 
 
                     NewNode newEdge = Add_Node(edge.node.Item1, edge.node.Item2, newDistance);
                     minDistance.Add(Tuple.Create(newEdge, newDistance), node);
 
                 }
                 
-                heap.Enqueue(edge);
+                heap.Enqueue(edge, newDistance);
             }
 
             if (node.node.Item1.Equals(end.Item1) && node.node.Item2.Equals(end.Item2))
@@ -184,11 +187,11 @@ public class AlgorithmBFS : MonoBehaviour
 
     IEnumerator startAlgorithm()
     {
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(1);
         
-        Filter(manager.graph, manager.graph[1], manager.graph[12], 5);
+        Filter(manager.graph, manager.graph[87], manager.graph[37], 5);
         
-        List<Tuple<NewNode, float>> caminho = Dijkstra(Tuple.Create(manager.graph[0], manager.graph[13]), Tuple.Create(manager.graph[7], manager.graph[20]));
+        List<Tuple<NewNode, float>> caminho = Dijkstra(Tuple.Create(manager.graph[87], manager.graph[37]), Tuple.Create(manager.graph[37], manager.graph[87]));
         
         foreach (Tuple<NewNode, float> node in caminho)
         {

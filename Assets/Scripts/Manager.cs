@@ -28,7 +28,7 @@ public class Manager : MonoBehaviour
     public Node endCharacter01;
     public Node startCharacter02;
     public Node endCharacter02;
-    public int friendship;
+    public float friendship;
     public Slider slider;
     public TextMeshProUGUI valueFriendship;
 
@@ -63,13 +63,15 @@ public class Manager : MonoBehaviour
 
     public void StartGame()
     {
-        /*
-        List<Node> nodes = algorithBFS.BFS(graph, startCharacter01, endCharacter01);
+        Tuple<Node, Node> startNode = Tuple.Create(startCharacter01, startCharacter02);
+        Tuple<Node, Node> endNode = Tuple.Create(endCharacter01, endCharacter02);
+        // List<AlgorithmBFS.NewNode> nodes = algorithBFS.MST(startNode, endNode, friendship);
 
-        if (nodes.Count != 0)
-            game.CreateCharacter(nodes[0], nodes);
 
-        */
+        // if (nodes.Count != 0)
+            // game.CreateCharacter(nodes[0], nodes);
+
+        
     }
 
     // Função chamada quando o valor do slider é alterado.
