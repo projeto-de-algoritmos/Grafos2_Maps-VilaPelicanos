@@ -90,8 +90,7 @@ public class MenuCustomize : EditorWindow
                     }
 
                     float distance = Vector2.Distance(adj.transform.position, node.transform.position);
-                    float distancereal = node.AddEdge(adj, distance);
-                    Debug.Log(distancereal);
+                    node.AddEdge(adj, distance);
                 }
 
                 foreach (Node nodeNull in nodesNull)

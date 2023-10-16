@@ -49,6 +49,9 @@ public class Manager : MonoBehaviour
         {
             if (node != null && node.Edges != null && node.Edges.Count == 0)
                 Debug.Log(node.gameObject.name);
+
+            if (node.Edges == null)
+                Debug.Log(node.gameObject.name);
         }
     }
 
@@ -111,8 +114,9 @@ public class Manager : MonoBehaviour
                     }
 
                     float distance = Vector2.Distance(adj.transform.position, node.transform.position);
-                    float distancereal = node.AddEdge(adj, distance);
-                    // Debug.Log(distancereal);
+                    node.AddEdge(adj, distance);
+                    if (!adj.nodesAdj.Contains(node))
+                        adj.nodesAdj.Add(node);
                 }
 
                 foreach (Node nodeNull in nodesNull)
