@@ -3,23 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Security.Policy;
 using UnityEngine;
+using static AlgorithmBFS;
 
 public class Heap
 {
-    public struct ElementQueue
-    {
-        public Tuple<int, int> element; // id dos pares de nodes
-        public float value; // Soma das distancia das arestas do Node1 com seu adj + Node2 com seu adj
-
-        public ElementQueue(Tuple<int, int> _element, float _value)
-        {
-            element = _element;
-            value = _value;
-        }
-    }
-
-    private ElementQueue[] priorityQueue;
-    private Dictionary<ElementQueue, int> hash; // Elemento e id de sua posicao na priorityQueue
+    private AlgorithmBFS.NewNode[] priorityQueue;
+    private Dictionary<AlgorithmBFS.NewNode, int> hash; // Elemento e id de sua posicao na priorityQueue
     private readonly int max;
     private int last;
 
@@ -27,12 +16,12 @@ public class Heap
     {
         max = _max + 1;
         last = 0;
-        priorityQueue = new ElementQueue[max];
-        hash = new Dictionary<ElementQueue, int>();
+        priorityQueue = new AlgorithmBFS.NewNode[max];
+        hash = new Dictionary<AlgorithmBFS.NewNode, int>();
     }
 
 
-    public ElementQueue[] PriorityQueue
+    public AlgorithmBFS.NewNode[] PriorityQueue
     {
         get { return priorityQueue; }
         set { priorityQueue = value; }
@@ -44,13 +33,10 @@ public class Heap
         set { last = value; }
     }
 
-    public int Enqueue(int node1, int node2, float _value)
+    public int Enqueue(AlgorithmBFS.NewNode newElement)
     {
         if (last == max - 1)
             return -1;
-
-        Tuple<int, int> newNodes = new Tuple<int, int>(node1, node2);
-        ElementQueue newElement = new(newNodes, _value);
 
         if (hash.ContainsKey(newElement))
         {
@@ -59,9 +45,9 @@ public class Heap
                 return 0;
             }
 
-            if (priorityQueue[hash[newElement]].value > newElement.value)
+            if (priorityQueue[hash[newElement]].node.Item3 > newElement.node.Item3)
             {
-                priorityQueue[hash[newElement]].value = newElement.value;
+                newElement.node = Tuple.Create(newElement.node.Item1, newElement.node.Item2, newElement.node.Item3);
                 int pos = ShiftUp(hash[newElement]);
                 hash[newElement] = pos;
             }
@@ -78,17 +64,17 @@ public class Heap
         return 0;
     }
 
-    public ElementQueue Dequeue()
+    public AlgorithmBFS.NewNode Dequeue()
     {
         if (last == 0)
-            return new ElementQueue(Tuple.Create(-1, -1), (int)-1);
+            return new AlgorithmBFS.NewNode(Tuple.Create(new Node(), new Node(), -1f), 0);
 
         Swap(1, last);
-        
-        ElementQueue temp = priorityQueue[last];
+
+        AlgorithmBFS.NewNode temp = priorityQueue[last];
         last--;
 
-        ElementQueue hashChange = priorityQueue[1];
+        AlgorithmBFS.NewNode hashChange = priorityQueue[1];
         int pos = HeapiFy(1);
 
         hash[temp] = -1;
@@ -99,7 +85,7 @@ public class Heap
 
     private int ShiftUp(int pos)
     {
-        if (pos != 1 && priorityQueue[pos].value < priorityQueue[pos/2].value)
+        if (pos != 1 && priorityQueue[pos].node.Item3 < priorityQueue[pos/2].node.Item3)
         {
             Swap(pos, pos / 2);
 
@@ -114,15 +100,15 @@ public class Heap
         if (last >= pos * 2)
         {
             int index = pos * 2;
-            float menor = priorityQueue[index].value;
+            float menor = priorityQueue[index].node.Item3;
 
-            if (last >= pos * 2 + 1 && priorityQueue[pos * 2 + 1].value < menor)
+            if (last >= pos * 2 + 1 && priorityQueue[pos * 2 + 1].node.Item3 < menor)
             {
                 index = pos * 2 + 1;
-                menor = priorityQueue[index].value;
+                menor = priorityQueue[index].node.Item3;
             }
 
-            if (priorityQueue[pos].value > menor)
+            if (priorityQueue[pos].node.Item3 > menor)
             {
                 Swap(pos, index);
                 return HeapiFy(index);
