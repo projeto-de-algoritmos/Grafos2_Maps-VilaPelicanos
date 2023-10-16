@@ -75,6 +75,18 @@ public class MenuCustomize : EditorWindow
     {
         DeleteEdges(manager);
 
+        foreach (Node node in manager.graph)
+        {
+            if (node.edgesList.Count > 0)
+            {
+                node.Edges.Clear();
+                foreach (Node.newEdges adj in node.edgesList)
+                {
+                    node.Edges.Add(adj.node, adj.distance);
+                }                
+            }
+        }
+
         int numNodes = manager.graph.Count;
 
         manager.matrixAdj = new int[numNodes][];

@@ -42,6 +42,11 @@ public class Manager : MonoBehaviour
         speedSlider.onValueChanged.AddListener(UpdateSpeedValue);
 
         graph ??= new List<Node>();
+
+        foreach (Node node in graph)
+        {
+            Debug.Log(node.Edges.Count);
+        }
     }
 
     void UpdateSpeedValue(float newValue)

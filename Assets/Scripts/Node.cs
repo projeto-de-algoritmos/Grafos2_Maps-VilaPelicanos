@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,9 +12,20 @@ public class Node : MonoBehaviour
     [SerializeField]
     private Dictionary<Node, float> edges = new();
 
+    [SerializeField]
+    public List<newEdges> edgesList = new();
+
     public Game game;
 
     private Button button;
+
+    [SerializeField]
+    [Serializable]
+    public struct newEdges
+    {
+        public Node node;
+        public float distance;
+    }
 
     public Dictionary<Node, float> Edges
     {
