@@ -107,21 +107,22 @@ public class AlgorithmBFS : MonoBehaviour
     {
 
         if (start.Equals(end)) return new List<Tuple<NewNode, float>>(); // incio igual ao fim
-
+        
         Dictionary<Tuple<NewNode, float>, NewNode> minDistance = new();
         minDistance.Add(Tuple.Create(newGraph[0], 0f), newGraph[0]);
         
         Heap heap = new(newGraph.Count);
         heap.Enqueue(newGraph[0]);
-
+        
         while (heap.Last > 0)
         {
             NewNode node = heap.Dequeue();
-
+            
             foreach (NewNode edge in node.nodesAdj)
-            {
+            {   
                 int pos = -1;
-
+                //NewNode key = heap.Hash.FirstOrDefault(x => x.Key.node.Item1.Equals(edge.node.Item1) && x.Key.node.Item2.Equals(edge.node.Item2)).Key;
+                
                 if (heap.Hash.ContainsKey(edge))
                 {
                     pos = heap.Hash[edge];
@@ -132,19 +133,18 @@ public class AlgorithmBFS : MonoBehaviour
                 if(pos == -1)
                 {
                     minDistance.Add(Tuple.Create(edge, newDistance), node);
-                    heap.Enqueue(edge);
 
-                }else if (newDistance < heap.PriorityQueue[pos].node.Item3)
+                }
+                else if (newDistance < heap.PriorityQueue[pos].node.Item3)
                 {
                     minDistance.Remove(Tuple.Create(edge, heap.PriorityQueue[pos].node.Item3)); 
 
                     NewNode newEdge = Add_Node(edge.node.Item1, edge.node.Item2, newDistance);
                     minDistance.Add(Tuple.Create(newEdge, newDistance), node);
 
-                    heap.Enqueue(newEdge);
-                    //heap.PriorityQueue[pos] = newEdge;
-
                 }
+                
+                heap.Enqueue(edge);
             }
 
             if (node.node.Item1.Equals(end.Item1) && node.node.Item2.Equals(end.Item2))
@@ -185,11 +185,11 @@ public class AlgorithmBFS : MonoBehaviour
     IEnumerator startAlgorithm()
     {
         yield return new WaitForSeconds(5);
-
+        
         Filter(manager.graph, manager.graph[1], manager.graph[12], 5);
-
+        
         List<Tuple<NewNode, float>> caminho = Dijkstra(Tuple.Create(manager.graph[0], manager.graph[13]), Tuple.Create(manager.graph[7], manager.graph[20]));
-
+        
         foreach (Tuple<NewNode, float> node in caminho)
         {
             Debug.Log(node.Item1.node.Item1 + ", " + node.Item1.node.Item2 + ", " + node.Item2 + "->");
