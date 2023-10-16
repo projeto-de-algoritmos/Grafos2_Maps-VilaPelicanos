@@ -77,13 +77,25 @@ public class MenuCustomize : EditorWindow
 
         foreach (Node node in manager.graph)
         {
-            if (node.edgesList.Count > 0)
+            if (node != null && node.nodesAdj.Count > 0)
             {
-                node.Edges.Clear();
-                foreach (Node.newEdges adj in node.edgesList)
+                List<Node> nodesNull = new List<Node>();
+                node.ResetEdges();
+                foreach (Node adj in node.nodesAdj)
                 {
-                    node.Edges.Add(adj.node, adj.distance);
-                }                
+                    if (adj == null)
+                    {
+                        nodesNull.Add(adj);
+                        continue;
+                    }
+
+                    float distance = Vector2.Distance(adj.transform.position, node.transform.position);
+                    float distancereal = node.AddEdge(adj, distance);
+                    Debug.Log(distancereal);
+                }
+
+                foreach (Node nodeNull in nodesNull)
+                    node.nodesAdj.Remove(nodeNull);
             }
         }
 
@@ -106,6 +118,9 @@ public class MenuCustomize : EditorWindow
         {
             int currentNodeId = node.Id;
 
+            if (node.Edges == null)
+                continue;
+
             foreach (Node edge in node.Edges.Keys)
             {
                 Node adjNode = edge;
@@ -122,22 +137,17 @@ public class MenuCustomize : EditorWindow
 
                 if (manager.matrixAdj[adjNodeId][currentNodeId] != 1)
                 {
-                    // Calcule a posição média entre os dois nós adjacentes.
                     Vector3 position = (node.transform.localPosition + adjNode.transform.localPosition) / 2f;
 
-                    // Calcule a distância entre os nós adjacentes.
                     float distance = Vector3.Distance(node.transform.localPosition, adjNode.transform.localPosition);
 
-                    // Crie a imagem retangular usando o prefab.
                     Image edgeImage = Instantiate(manager.edgePrefab, position, Quaternion.identity);
 
-                    // Defina o tamanho da imagem retangular com base na distância entre os nós adjacentes.
-                    edgeImage.rectTransform.sizeDelta = new Vector2(distance - 20, 4f); // 4f é a espessura da linha.
+                    edgeImage.rectTransform.sizeDelta = new Vector2(distance - 20, 4f);
 
                     edgeImage.transform.SetParent(manager.parentEdge);
                     edgeImage.transform.localPosition = position;
 
-                    // Certifique-se de que a imagem retangular está alinhada com a linha entre os nós.
                     Vector3 direction = (adjNode.transform.localPosition - node.transform.localPosition).normalized;
                     float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
                     edgeImage.rectTransform.rotation = Quaternion.Euler(0f, 0f, angle);

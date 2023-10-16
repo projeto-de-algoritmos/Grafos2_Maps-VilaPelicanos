@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Remoting.Messaging;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,22 +13,14 @@ public class Node : MonoBehaviour
     private int id;
 
     [SerializeField]
-    private Dictionary<Node, float> edges = new();
+    private Dictionary<Node, float> edges;
 
     [SerializeField]
-    public List<newEdges> edgesList = new();
+    public List<Node> nodesAdj = new();
 
     public Game game;
 
     private Button button;
-
-    [SerializeField]
-    [Serializable]
-    public struct newEdges
-    {
-        public Node node;
-        public float distance;
-    }
 
     public Dictionary<Node, float> Edges
     {
@@ -33,14 +28,23 @@ public class Node : MonoBehaviour
         set { edges = value; }
     }
 
-    public void AddEdge(Node node, float distance)
+    public void ResetEdges()
     {
-        Dictionary<Node, float> edge = new Dictionary<Node, float>();
+        edges = new Dictionary<Node, float>();
+    }
+
+    public float AddEdge(Node node, float distance)
+    {
+        edges ??= new Dictionary<Node, float>();
+
         edges.Add(node, distance);
+
+        return edges[node];
     }
 
     public bool ContainsNode(Node node)
     {
+        edges ??= new Dictionary<Node, float>();
         return edges.ContainsKey(node);
     }
 

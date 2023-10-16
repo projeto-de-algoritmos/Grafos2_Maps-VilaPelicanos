@@ -8,7 +8,6 @@ using Unity.IO.LowLevel.Unsafe;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using static AlgorithmBFS;
 
 public class AlgorithmBFS : MonoBehaviour
 {
