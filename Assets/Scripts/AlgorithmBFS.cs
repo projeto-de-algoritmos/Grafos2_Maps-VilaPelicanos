@@ -13,7 +13,7 @@ public class AlgorithmBFS : MonoBehaviour
     private Manager manager;
     private List<NewNode> newGraph = new();
 
-    struct NewNode
+    public struct NewNode
     {
         public int id; 
         public Tuple<Node, Node, float> node;
@@ -100,6 +100,7 @@ public class AlgorithmBFS : MonoBehaviour
     }
     public void Dijkstra(Tuple<Node, Node> start, Tuple<Node, Node> end)
     {
+        /*
         int[] distancia = new int[newGraph.Count];
         for (int i = 0; i < newGraph.Count; i++)
         {
@@ -152,6 +153,7 @@ public class AlgorithmBFS : MonoBehaviour
         {
             Console.WriteLine(i + "\t" + distancia[i]);
         }
+        */
     }
 
     private float Distance(Tuple<Node, Node> element)
