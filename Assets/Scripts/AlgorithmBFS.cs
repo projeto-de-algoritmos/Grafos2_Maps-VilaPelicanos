@@ -15,21 +15,23 @@ public class AlgorithmBFS : MonoBehaviour
 
     struct NewNode
     {
-        public Tuple<Node, Node> node;
+        public int id; 
+        public Tuple<Node, Node, float> node;
         public List<NewNode> nodesAdj;
 
-        public NewNode(Tuple<Node, Node> node)
+        public NewNode(Tuple<Node, Node, float> _node, int _id)
         {
-            this.node = node;
-            this.nodesAdj = new List<NewNode>();
+            node = _node;
+            nodesAdj = new List<NewNode>();
+            id = _id;
         }
     }
 
-    private NewNode Add_Node(Node node1, Node node2)
+    private NewNode Add_Node(Node node1, Node node2, float edgeSize)
     {
-        Tuple<Node, Node> node = Tuple.Create(node1, node2);
+        Tuple<Node, Node, float> node = Tuple.Create(node1, node2, edgeSize);
 
-        NewNode newNode = new NewNode(node);
+        NewNode newNode = new NewNode(node, newGraph.Count);
 
         if (!newGraph.Contains(newNode))
         {
@@ -49,8 +51,8 @@ public class AlgorithmBFS : MonoBehaviour
 
     public void Filter(List<Node> graph, Node s, Node t, float min)
     {
-        NewNode newNode = Add_Node(s, t);
-
+        NewNode newNode = Add_Node(s, t, 0);
+        
         Queue<NewNode> queue = new();
         queue.Enqueue(newNode);
 
@@ -63,26 +65,28 @@ public class AlgorithmBFS : MonoBehaviour
 
             for (Node node = s; ; node = t)
             {
-                foreach (Node nodeAdj in node.Edges.Keys)
-                {
-                    float path;
+                
+                foreach (KeyValuePair<Node, float> nodeAdj in node.Edges)
+                {   
                     NewNode no = new();
 
                     if (node.Equals(s))
                     {
-                        path = Distance(nodeAdj, t);
+                        float path = Distance(nodeAdj.Key, t);
                         if (path <= min) continue;
-                        no = Add_Node(nodeAdj, t);
+
+                        no = Add_Node(nodeAdj.Key, t, nodeAdj.Value);
+                        Add_Edge(newNode, no);
                     }
                     else
                     {
-                        path = Distance(nodeAdj, s);
+                        float path = Distance(s, nodeAdj.Key);
                         if (path <= min) continue;
-                        no = Add_Node(s, nodeAdj);
+
+                        no = Add_Node(s, nodeAdj.Key, nodeAdj.Value);
+                        Add_Edge(newNode, no);
                     }
-
-                    Add_Edge(newNode, no);
-
+                    
                     if (!newGraph.Contains(no))
                     {
                         queue.Enqueue(no);
@@ -94,11 +98,60 @@ public class AlgorithmBFS : MonoBehaviour
             }
         }
     }
-
-    public void Dijkstra(int origem)
+    public void Dijkstra(Tuple<Node, Node> start, Tuple<Node, Node> end)
     {
+        int[] distancia = new int[newGraph.Count];
+        for (int i = 0; i < newGraph.Count; i++)
+        {
+            distancia[i] = int.MaxValue;
+        }
+
+        distancia[newGraph[0].id] = 0;
+
+        // adiciona o menor na distancia 
+
+        Heap heap = new(newGraph.Count);
+
+        if (start.Equals(end)) // inicio igual fim
+
+        heap.Enqueue(newGraph[0]);
+        // verifica se o menor é o final 
+        // adiciona os adj do menor na heap
         
-        
+        PriorityQueue<Tuple<int, int>> filaPrioridade = new PriorityQueue<Tuple<int, int>>();
+        filaPrioridade.Enqueue(new Tuple<int, int>(origem, 0));
+
+        while (filaPrioridade.Count > 0)
+        {
+            Tuple<int, int> u = filaPrioridade.Dequeue();
+            int uVertice = u.Item1;
+            int uDistancia = u.Item2;
+
+            if (uDistancia != distancia[uVertice])
+            {
+                continue;
+            }
+
+            foreach (var vizinho in adj[uVertice])
+            {
+                int vVertice = vizinho.Item1;
+                int peso = vizinho.Item2;
+                int novaDistancia = distancia[uVertice] + peso;
+
+                if (novaDistancia < distancia[vVertice])
+                {
+                    distancia[vVertice] = novaDistancia;
+                    filaPrioridade.Enqueue(new Tuple<int, int>(vVertice, novaDistancia));
+                }
+            }
+        }
+
+        // Imprimir as distâncias mínimas a partir da origem
+        Console.WriteLine("Vértice\tDistância a partir da origem");
+        for (int i = 0; i < V; i++)
+        {
+            Console.WriteLine(i + "\t" + distancia[i]);
+        }
     }
 
     private float Distance(Tuple<Node, Node> element)
