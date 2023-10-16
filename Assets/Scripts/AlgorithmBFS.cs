@@ -13,7 +13,7 @@ public class AlgorithmBFS : MonoBehaviour
     private Manager manager;
     private List<NewNode> newGraph = new();
 
-    struct NewNode
+    public struct NewNode
     {
         public int id; 
         public Tuple<Node, Node, float> node;
@@ -111,7 +111,7 @@ public class AlgorithmBFS : MonoBehaviour
         if (start.Equals(end)) // inicio igual fim
 
         heap.Enqueue(newGraph[0]);
-        // verifica se o menor é o final 
+        // verifica se o menor ï¿½ o final 
         // adiciona os adj do menor na heap
         
         PriorityQueue<Tuple<int, int>> filaPrioridade = new PriorityQueue<Tuple<int, int>>();
@@ -142,12 +142,13 @@ public class AlgorithmBFS : MonoBehaviour
             }
         }
 
-        // Imprimir as distâncias mínimas a partir da origem
-        Console.WriteLine("Vértice\tDistância a partir da origem");
+        // Imprimir as distï¿½ncias mï¿½nimas a partir da origem
+        Console.WriteLine("Vï¿½rtice\tDistï¿½ncia a partir da origem");
         for (int i = 0; i < V; i++)
         {
             Console.WriteLine(i + "\t" + distancia[i]);
         }
+        
     }
 
     private float Distance(Tuple<Node, Node> element)

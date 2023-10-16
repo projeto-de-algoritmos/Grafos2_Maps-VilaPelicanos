@@ -1,3 +1,4 @@
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -18,6 +19,12 @@ public class HeapTest : MonoBehaviour
         Debug.Log("-- END TESTES HEAP --");
     }
 
+    private AlgorithmBFS.NewNode CreateElement(float distance)
+    {
+        AlgorithmBFS.NewNode nodeReturn = new(Tuple.Create(new Node(), new Node(), distance), 1);
+        return nodeReturn;
+    }
+
     private string Test01()
     {
         string response = "Test01: ";
@@ -25,22 +32,22 @@ public class HeapTest : MonoBehaviour
         int maxSize = 10;
         Heap heap = new(maxSize);
 
-        heap.Enqueue(1, 2, 3.5f);
-        heap.Enqueue(2, 3, 2.2f);
-        heap.Enqueue(1, 3, 4.0f);
-        heap.Enqueue(6, 5, 4.8f);
-        heap.Enqueue(7, 4, 1.2f);
-        heap.Enqueue(3, 4, 3.9f);
-        heap.Enqueue(2, 1, 4.0f);
-        heap.Enqueue(8, 7, 4.0f);
-        heap.Enqueue(4, 2, .5f);
-        heap.Enqueue(7, 3, 9.1f);
+        heap.Enqueue(CreateElement(3.2f));
+        heap.Enqueue(CreateElement(2.2f));
+        heap.Enqueue(CreateElement(4.0f));
+        heap.Enqueue(CreateElement(4.8f));
+        heap.Enqueue(CreateElement(1.2f));
+        heap.Enqueue(CreateElement(3.9f));
+        heap.Enqueue(CreateElement(4.0f));
+        heap.Enqueue(CreateElement(4.0f));
+        heap.Enqueue(CreateElement(.5f));
+        heap.Enqueue(CreateElement(9.1f));
 
         float value = -1;
 
         for (int i = 0; i < maxSize; i++)
         {
-            float nextValue = heap.Dequeue().value;
+            float nextValue = heap.Dequeue().node.Item3;
 
             if (nextValue < value)
             {
@@ -58,9 +65,9 @@ public class HeapTest : MonoBehaviour
         int maxSize = 2;
         Heap heap = new(maxSize);
 
-        heap.Enqueue(1, 2, 3.5f);
-        heap.Enqueue(2, 3, 2.2f);
-        int result = heap.Enqueue(1, 3, 4.0f);
+        heap.Enqueue(CreateElement(3.5f));
+        heap.Enqueue(CreateElement(2.2f));
+        int result = heap.Enqueue(CreateElement(4.0f));
 
         if (result == -1)
             return response + successTest;
@@ -75,14 +82,14 @@ public class HeapTest : MonoBehaviour
         int maxSize = 2;
         Heap heap = new(maxSize);
 
-        heap.Enqueue(1, 2, 3.5f);
-        heap.Enqueue(2, 3, 2.2f);
-        heap.Enqueue(1, 3, 4.0f);
+        heap.Enqueue(CreateElement(3.5f));
+        heap.Enqueue(CreateElement(2.2f));
+        heap.Enqueue(CreateElement(4.0f));
         int result = 0;
 
         for (int i = 0; i < maxSize + 1; i++)
         {
-            result = (int)heap.Dequeue().value;
+            result = (int)heap.Dequeue().node.Item3;
         }
 
         if (result == -1)
@@ -98,22 +105,22 @@ public class HeapTest : MonoBehaviour
         int maxSize = 10;
         Heap heap = new(maxSize);
 
-        heap.Enqueue(1, 2, 3.5f);
-        heap.Enqueue(2, 3, 2.2f);
-        heap.Enqueue(1, 3, 4.0f);
-        heap.Enqueue(6, 5, 4.8f);
-        heap.Enqueue(7, 4, 1.2f);
-        heap.Enqueue(3, 4, 3.9f);
-        heap.Enqueue(2, 1, 4.0f);
-        heap.Enqueue(8, 7, 4.0f);
-        heap.Enqueue(4, 2, .5f);
-        heap.Enqueue(7, 3, 9.1f);
+        heap.Enqueue(CreateElement(3.5f));
+        heap.Enqueue(CreateElement(2.2f));
+        heap.Enqueue(CreateElement(4.0f));
+        heap.Enqueue(CreateElement(4.8f));
+        heap.Enqueue(CreateElement(1.2f));
+        heap.Enqueue(CreateElement(3.9f));
+        heap.Enqueue(CreateElement(4.0f));
+        heap.Enqueue(CreateElement(4.0f));
+        heap.Enqueue(CreateElement(.5f));
+        heap.Enqueue(CreateElement(9.1f));
 
         float value = -1;
 
         for (int i = 0; i < maxSize - 4; i++)
         {
-            float nextValue = heap.Dequeue().value;
+            float nextValue = heap.Dequeue().node.Item3;
 
             if (nextValue < value)
             {
@@ -121,17 +128,17 @@ public class HeapTest : MonoBehaviour
             }
         }
 
-        heap.Enqueue(6, 9, 4.0f);
-        heap.Enqueue(7, 1, 4.1f);
-        heap.Enqueue(2, 9, .2f);
-        heap.Enqueue(8, 9, 14.3f);
+        heap.Enqueue(CreateElement(4.0f));
+        heap.Enqueue(CreateElement(4.1f));
+        heap.Enqueue(CreateElement(.2f));
+        heap.Enqueue(CreateElement(14.3f));
 
         int last = heap.Last;
         value = -1;
 
         for (int i = 0; i < last; i++)
         {
-            float nextValue = heap.Dequeue().value;
+            float nextValue = heap.Dequeue().node.Item3;
 
             if (nextValue < value)
             {
