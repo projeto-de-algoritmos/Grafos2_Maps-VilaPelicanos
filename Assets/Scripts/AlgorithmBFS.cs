@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Xml.Linq;
 using Unity.IO.LowLevel.Unsafe;
 using Unity.VisualScripting;
@@ -119,7 +120,12 @@ public class AlgorithmBFS : MonoBehaviour
 
             foreach (NewNode edge in node.nodesAdj)
             {
-                int pos = heap.Hash[edge];
+                int pos = -1;
+
+                if (heap.Hash.ContainsKey(edge))
+                {
+                    pos = heap.Hash[edge];
+                }
 
                 float newDistance = node.node.Item3 + edge.node.Item3;
 
@@ -130,12 +136,13 @@ public class AlgorithmBFS : MonoBehaviour
 
                 }else if (newDistance < heap.PriorityQueue[pos].node.Item3)
                 {
-                    minDistance.Remove(Tuple.Create(edge, heap.PriorityQueue[pos].node.Item3)); // nao consegui editar fiquei com raiva removi e to adicionando dnv com as alterações
+                    minDistance.Remove(Tuple.Create(edge, heap.PriorityQueue[pos].node.Item3)); 
 
                     NewNode newEdge = Add_Node(edge.node.Item1, edge.node.Item2, newDistance);
                     minDistance.Add(Tuple.Create(newEdge, newDistance), node);
 
-                    heap.PriorityQueue[pos] = newEdge;
+                    heap.Enqueue(newEdge);
+                    //heap.PriorityQueue[pos] = newEdge;
 
                 }
             }
@@ -179,9 +186,9 @@ public class AlgorithmBFS : MonoBehaviour
     {
         yield return new WaitForSeconds(5);
 
-        Filter(manager.graph, manager.graph[47], manager.graph[4], 5);
+        Filter(manager.graph, manager.graph[1], manager.graph[12], 5);
 
-        List<Tuple<NewNode, float>> caminho = Dijkstra(Tuple.Create(manager.graph[47], manager.graph[4]), Tuple.Create(manager.graph[4], manager.graph[47]));
+        List<Tuple<NewNode, float>> caminho = Dijkstra(Tuple.Create(manager.graph[0], manager.graph[13]), Tuple.Create(manager.graph[7], manager.graph[20]));
 
         foreach (Tuple<NewNode, float> node in caminho)
         {
