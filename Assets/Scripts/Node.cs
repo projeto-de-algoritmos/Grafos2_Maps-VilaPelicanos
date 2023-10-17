@@ -1,5 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Remoting.Messaging;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,11 +13,39 @@ public class Node : MonoBehaviour
     private int id;
 
     [SerializeField]
-    private List<Node> nodesAdj = new();
+    private Dictionary<Node, float> edges;
+
+    [SerializeField]
+    public List<Node> nodesAdj = new();
 
     public Game game;
 
     private Button button;
+
+    public Dictionary<Node, float> Edges
+    {
+        get { return edges; }
+        set { edges = value; }
+    }
+
+    public void ResetEdges()
+    {
+        edges = new Dictionary<Node, float>();
+    }
+
+    public void AddEdge(Node node, float distance)
+    {
+        edges ??= new Dictionary<Node, float>();
+
+        edges.Add(node, distance);
+    }
+
+    public bool ContainsNode(Node node)
+    {
+        edges ??= new Dictionary<Node, float>();
+        return edges.ContainsKey(node);
+    }
+
 
     private void Start()
     {
@@ -22,38 +54,16 @@ public class Node : MonoBehaviour
         button.onClick.AddListener(ClickNode);
     }
 
-    public int getId()
+    public int Id
     {
-        return id;
-    }
-
-    public void setId(int _id)
-    {
-        id = _id;
-    }
-
-    public List<Node> getNodesAdj()
-    {
-        return nodesAdj;
-    }
-
-    public void setNodeAdj(Node node)
-    {
-        nodesAdj.Add(node);
-    }
-
-    public bool isAdjacente(Node node)
-    {
-        return nodesAdj.Contains(node) && node != this;
-    }
-
-    public void setNodesAdj(List<Node> nodes)
-    {
-        nodesAdj = nodes;
+        get { return id; }
+        set { id = value; }
     }
 
     public void ClickNode()
     {
         game.SelectionNode(this);
     }
+
+    
 }

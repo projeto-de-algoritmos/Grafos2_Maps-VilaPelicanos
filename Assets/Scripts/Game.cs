@@ -19,18 +19,32 @@ public class Game : MonoBehaviour
     public Image char02;
     public TextMeshProUGUI startNode02;
     public TextMeshProUGUI endNode02;
+
+    public GameObject charObj01;
+    public GameObject charObj02;
+
+    public float tamBarra = 50f;
     
     public int selectionChar = 1;
     public int selectionText = 1;
 
-    public void CreateCharacter(Node node, List<Node> nodes)
+    public void CreateCharacter(Node node, List<Node> nodes, int numChar)
     {
         GameObject characterInstance = Instantiate(prefabChar, parentChar);
         characterInstance.transform.localPosition = node.gameObject.transform.localPosition;
 
         Image characterImage = characterInstance.GetComponent<Image>();
 
-        characterImage.sprite = char01.sprite;        
+        if (numChar == 1)
+        {
+            characterImage.sprite = char01.sprite;
+            charObj01 = characterInstance;
+        }
+        else
+        {
+            characterImage.sprite = char02.sprite;
+            charObj02 = characterInstance;
+        }
 
         characterInstance.GetComponent<Characters>().StartChar(nodes, manager);
     }
@@ -68,12 +82,12 @@ public class Game : MonoBehaviour
     {
         if (selectionChar == 1) 
         {
-            startNode01.text = node.getId().ToString();
+            startNode01.text = node.Id.ToString();
             manager.startCharacter01 = node;
         }
         else if (selectionChar == 2)
         {
-            startNode02.text = node.getId().ToString();
+            startNode02.text = node.Id.ToString();
             manager.startCharacter02 = node;
         }
     }
@@ -82,12 +96,12 @@ public class Game : MonoBehaviour
     {
         if (selectionChar == 1)
         {
-            endNode01.text = node.getId().ToString();
+            endNode01.text = node.Id.ToString();
             manager.endCharacter01 = node;
         }
         else if (selectionChar == 2)
         {
-            endNode02.text = node.getId().ToString();
+            endNode02.text = node.Id.ToString();
             manager.endCharacter02 = node;
         }
     }

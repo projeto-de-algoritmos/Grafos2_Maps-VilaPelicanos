@@ -1,98 +1,63 @@
-using System;
-using System.Collections;
+using NUnit.Framework;
 using System.Collections.Generic;
-using TMPro;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Manager : MonoBehaviour
+
+public class MenuCustomize : EditorWindow
 {
-    [SerializeField]
-    public Image edgePrefab;
-
-    [SerializeField]
-    public Transform parentEdge;
-
-    [SerializeField]
-    private GameObject rectanglePrefab;
-
-    public AlgorithmBFS algorithBFS;
-    public Game game;
-
-    public Slider speedSlider;
-    public float speed = 1;
-    public TextMeshProUGUI speedValue;
-
-    public List<Node> graph;
-    public Node startCharacter01;
-    public Node endCharacter01;
-    public Node startCharacter02;
-    public Node endCharacter02;
-    public float friendship;
-    public Slider slider;
-    public TextMeshProUGUI valueFriendship;
-
-    [SerializeField]
-    public int[][] matrixAdj;
-
-    // Start is called before the first frame update
-    void Start()
+    [MenuItem("Grafo/Atualiza as arestas")]
+    public static void LoadEdges()
     {
-        slider.onValueChanged.AddListener(UpdateSliderValue);
-        speedSlider.onValueChanged.AddListener(UpdateSpeedValue);
+        GameObject manager = GameObject.Find("Manager");
 
-        graph ??= new List<Node>();
+        if (manager.GetComponent<Manager>())
+            SetEdges(manager.GetComponent<Manager>());
+        else
+            Debug.Log("Objeto 'Manager' nao encontrado");
 
-        SetEdges(this);
-
-        foreach (Node node in graph)
-        {
-            if (node != null && node.Edges != null && node.Edges.Count == 0)
-                Debug.Log(node.gameObject.name);
-
-            if (node.Edges == null)
-                Debug.Log(node.gameObject.name);
-        }
     }
 
-    void UpdateSpeedValue(float newValue)
+    [MenuItem("Grafo/Deleta as arestas")]
+    public static void DeleteEdges()
     {
-        speed = ((int)newValue);
-        speedValue.text = speed.ToString();
+        GameObject manager = GameObject.Find("Manager");
+
+        if (manager.GetComponent<Manager>())
+            DeleteEdges(manager.GetComponent<Manager>());
+        else
+            Debug.Log("Objeto 'Manager' nao encontrado");
+
     }
 
-    public void StartGame()
+    /*
+    [MenuItem("Grafo/Atualiza as novas arestas")]
+    public static void UpdateEdges()
     {
-        Tuple<Node, Node> startNode = Tuple.Create(startCharacter01, startCharacter02);
-        Tuple<Node, Node> endNode = Tuple.Create(endCharacter01, endCharacter02);
-        Stack<AlgorithmBFS.NewNode> nodes = algorithBFS.MST(startNode, endNode, friendship);
-        List<Node> path1 = new List<Node>();
-        List<Node> path2 = new List<Node>();
+        GameObject manager = GameObject.Find("Manager");
 
-        foreach (AlgorithmBFS.NewNode node in nodes)
+        if (manager.GetComponent<Manager>())
+            UpdateEdge(manager.GetComponent<Manager>());
+        else
+            Debug.Log("Objeto 'Manager' nao encontrado");
+
+    }
+
+    public static void UpdateEdge(Manager manager)
+    {
+        foreach (Node node in manager.graph)
         {
-            path1.Add(node.node.Item1);
-            path2.Add(node.node.Item2);
+            foreach (Node edge in node.getNodesAdj())
+            {
+                node.AddEdge(edge, Vector2.Distance(edge.transform.transform.position, node.transform.position));
+            }
         }
 
-        if (nodes.Count != 0)
-        {
-            game.CreateCharacter(path1[0], path1, 1);
-            game.CreateCharacter(path2[0], path2, 2);
-        }
+        Debug.Log("Update complete");
     }
-
-    // Função chamada quando o valor do slider é alterado.
-    void UpdateSliderValue(float newValue)
-    {
-        friendship = ((int)newValue);
-        valueFriendship.text = friendship.ToString();
-    }
-
-    public void ExitGame()
-    {
-        Application.Quit();
-    }
+    */
 
     public static void DeleteEdges(Manager manager)
     {
@@ -105,6 +70,7 @@ public class Manager : MonoBehaviour
 
         Debug.Log("Delete complete");
     }
+
     public static void SetEdges(Manager manager)
     {
         DeleteEdges(manager);
@@ -125,8 +91,6 @@ public class Manager : MonoBehaviour
 
                     float distance = Vector2.Distance(adj.transform.position, node.transform.position);
                     node.AddEdge(adj, distance);
-                    if (!adj.nodesAdj.Contains(node))
-                        adj.nodesAdj.Add(node);
                 }
 
                 foreach (Node nodeNull in nodesNull)
