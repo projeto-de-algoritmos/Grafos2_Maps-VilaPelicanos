@@ -1,26 +1,24 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Security.Policy;
-using System.Xml.Linq;
-using Unity.IO.LowLevel.Unsafe;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class AlgorithmBFS : MonoBehaviour
 {
-    
+
     [SerializeField]
     private Manager manager;
+
+    [SerializeField]
+    private Heap heap;
+
     private List<NewNode> newGraph = new();
-    private int[][] matrixAdj;
+    private NewNode[][] matrixAdj;
 
     public struct NewNode
     {
-        public int id; 
+        public int id;
         public Tuple<Node, Node, float> node;
         public List<NewNode> nodesAdj;
 
@@ -33,45 +31,45 @@ public class AlgorithmBFS : MonoBehaviour
 
     }
 
-    private NewNode Add_Node(Node node1, Node node2, float edgeSize)
+    private Tuple<int, NewNode> Add_Node(Node node1, Node node2, float edgeSize)
     {
         Tuple<Node, Node, float> node = Tuple.Create(node1, node2, edgeSize);
 
         NewNode newNode = new NewNode(node, newGraph.Count);
 
-        if (!newGraph.Contains(newNode))
+        if (matrixAdj[node1.Id][node2.Id].id == -1) // mudar para algo O(1) | Mudado!
         {
-            newGraph.Add(newNode);     
-            return newNode;
+            newGraph.Add(newNode);
+            return Tuple.Create(1, newNode);
         }
-        return newGraph[newGraph.IndexOf(newNode)];
+        // mudar a matriz para NewNode para armazenar o obj
+        return Tuple.Create(-1, matrixAdj[node1.Id][node2.Id]);
     }
 
     private void Add_Edge(NewNode node1, NewNode node2)
     {
-        if (!node1.nodesAdj.Contains(node2))        
-            node1.nodesAdj.Add(node2);        
-
-        if (!node2.nodesAdj.Contains(node1))
-            node2.nodesAdj.Add(node1);
+        if (!node1.nodesAdj.Contains(node2))
+            node1.nodesAdj.Add(node2);
     }
 
     public void Filter(List<Node> graph, Node s, Node t, float min)
     {
-        matrixAdj = new int[graph.Count][];
+        if (s == null || t == null) return;
+
+        matrixAdj = new NewNode[graph.Count][];
 
         for (int i = 0; i < graph.Count; i++)
         {
-            matrixAdj[i] = new int[graph.Count];
+            matrixAdj[i] = new NewNode[graph.Count];
 
             for (int j = 0; j < graph.Count; j++)
             {
-                matrixAdj[i][j] = 0;
+                matrixAdj[i][j] = new(null, -1);
             }
         }
 
-        NewNode newNode = Add_Node(s, t, 0);
-        
+        NewNode newNode = Add_Node(s, t, 0).Item2;
+
         Queue<NewNode> queue = new();
         queue.Enqueue(newNode);
 
@@ -83,97 +81,91 @@ public class AlgorithmBFS : MonoBehaviour
             s = newNode.node.Item1;
             t = newNode.node.Item2;
 
-            foreach (Node sAdj in s.Edges.Keys)
+            for (Node node = s, node2 = t; ; node = t, node2 = s)
             {
-                if (matrixAdj[sAdj.Id][t.Id] == 0)
+
+                foreach (KeyValuePair<Node, float> nodeAdj in node.Edges)
                 {
-                    float distance = Distance(sAdj, t);
-                    if (distance <= min) continue; 
-                        
-                    NewNode temp = Add_Node(sAdj, t, distance);
-                    matrixAdj[sAdj.Id][t.Id] = 1;
-                    Add_Edge(newNode, temp);
-                    queue.Enqueue(temp);
-                }
+                    Tuple<int, NewNode> no;
 
-                foreach (Node tAdj in t.Edges.Keys)
-                {
-                    if (matrixAdj[sAdj.Id][tAdj.Id] == 0)
+                    if (node.Equals(s))
                     {
-                        float distance = Distance(sAdj, tAdj);
-                        if (distance <= min) continue;
+                        float path = Distance(nodeAdj.Key, t);
+                        if (path < min) continue;
 
-                        NewNode newEdge = Add_Node(sAdj, tAdj, distance);
-                        matrixAdj[sAdj.Id][tAdj.Id] = 1;
-                        Add_Edge(newNode, newEdge);
-                        queue.Enqueue(newEdge);
-                    }                    
-
-                    if (matrixAdj[s.Id][tAdj.Id] == 0)
-                    {
-                        float distance = Distance(s, tAdj);
-                        if (distance <= min) continue;
-
-                        NewNode newEdge = Add_Node(s, tAdj, distance);
-                        matrixAdj[s.Id][tAdj.Id] = 1;
-                        Add_Edge(newNode, newEdge);
-                        queue.Enqueue(newEdge);
+                        no = Add_Node(nodeAdj.Key, t, nodeAdj.Value);
+                        if (no.Item1 != -1)
+                        {
+                            matrixAdj[nodeAdj.Key.Id][t.Id] = no.Item2;
+                            queue.Enqueue(no.Item2);
+                        }
                     }
+                    else
+                    {
+                        float path = Distance(s, nodeAdj.Key);
+                        if (path < min) continue;
+
+                        no = Add_Node(s, nodeAdj.Key, nodeAdj.Value);
+
+                        if (no.Item1 != -1)
+                        {
+                            matrixAdj[s.Id][nodeAdj.Key.Id] = no.Item2;
+                            queue.Enqueue(no.Item2);
+                        }
+                    }
+
+                    Add_Edge(newNode, no.Item2);                    
                 }
+
+                if (node.Equals(t)) break;
             }
         }
     }
-    public Stack<NewNode> Dijkstra(Tuple<Node, Node> start, Tuple<Node, Node> end)
-    {
 
-        if (start.Equals(end)) return new Stack<NewNode>(); // incio igual ao fim
-        
-        Dictionary<Tuple<NewNode, float>, NewNode> minDistance = new();
-        minDistance.Add(Tuple.Create(newGraph[0], 0f), newGraph[0]);
+    public List<NewNode> Dijkstra(Tuple<Node, Node> start, Tuple<Node, Node> end)
+    {
+        if (start.Equals(end) || end.Item1 == null || end.Item2 == null) return new List<NewNode>(); // incio igual ao fim
 
         Dictionary<int, int> MST = new();
 
-        Heap heap = new(newGraph.Count);
-        heap.Enqueue(newGraph[0], 0, 0f);
-        
+        heap = new(newGraph.Count);
+        heap.Enqueue(newGraph[0].id, 0, 0f);
+
         while (heap.Last > 0)
         {
-            Tuple<int, int> ids = heap.Dequeue();
+            Tuple<int, int, float> ids = heap.Dequeue();
+
+            if (MST.ContainsKey(ids.Item1)) return new List<NewNode>();
             MST.Add(ids.Item1, ids.Item2);
 
             NewNode node = newGraph[ids.Item1];
+
             foreach (NewNode edge in node.nodesAdj)
             {
-                float newDistance = node.node.Item3 + edge.node.Item3;
-                if (MST.ContainsKey(edge.id)) continue;
-                int response = heap.Enqueue(edge, node.id, newDistance);
+                float newDistance = ids.Item3 + edge.node.Item3;
+                heap.Enqueue(edge.id, node.id, newDistance);
 
-                if(response == 0)
-                {
-                    minDistance.Add(Tuple.Create(edge, newDistance), node);              
-                }             
             }
 
             // PrintHeap(heap);
 
             if (node.node.Item1.Id == end.Item1.Id && node.node.Item2.Id == end.Item2.Id)
             {
-                Debug.Log("Uhuuuuuuul");           
-                Stack<NewNode> path = new();
+                List<NewNode> path = new();
 
                 int three = node.id;
 
                 while (three != newGraph[0].id)
                 {
-                    path.Push(newGraph[three]);
+                    path.Insert(0, newGraph[three]);
                     three = MST[three];
                 }
-                // path.Insert(0, minDistance.Keys.ElementAt(0));
+                path.Insert(0, newGraph[three]);
                 return path;
             }
         }
 
-        return new Stack<NewNode>(); // nao achou um caminho possivel em que nao se encontrassem
+        return new List<NewNode>(); // nao achou um caminho possivel em que nao se encontrassem
     }
 
     private float Distance(Tuple<Node, Node> element)
@@ -188,43 +180,27 @@ public class AlgorithmBFS : MonoBehaviour
 
     public void Start()
     {
-        // StartCoroutine(startAlgorithm());
+        //StartCoroutine(startAlgorithm());
     }
 
     IEnumerator startAlgorithm()
     {
         yield return new WaitForSeconds(1);
-        
+
         Filter(manager.graph, manager.graph[87], manager.graph[37], 110f);
-        Debug.Log(newGraph.Count);
-        Stack<NewNode> caminho = Dijkstra(
+        List<NewNode> caminho = Dijkstra(
             Tuple.Create(manager.graph[87], manager.graph[37]), Tuple.Create(manager.graph[37], manager.graph[87]));
-        
+
         foreach (NewNode node in caminho)
         {
             Debug.Log(node.node.Item1 + ", " + node.node.Item2 + " -> ");
         }
     }
 
-    public Stack<NewNode> MST(Tuple<Node, Node> start, Tuple<Node, Node> end, float minDistance)
+    public List<NewNode> MST(Tuple<Node, Node> start, Tuple<Node, Node> end, float minDistance)
     {
         Filter(manager.graph, start.Item1, start.Item2, minDistance);
 
         return Dijkstra(start, end);
-    }
-
-    public void PrintHeap(Heap heap)
-    {
-        Tuple<int, int, float>[] queue = heap.PriorityQueue;
-        int max = heap.Last;
-        for (int i = 1; i < max; i++)
-        {
-            if (queue[i] != null)
-                Debug.Log("Queueeeeeeeee:  " + queue[1].Item3);
-            else
-                Debug.Log("DEEEEU MERDAAA");
-
-            heap.Dequeue();            
-        }
     }
 }

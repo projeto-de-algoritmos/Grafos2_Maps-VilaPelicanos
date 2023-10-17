@@ -5,10 +5,12 @@ using System.Security.Policy;
 using UnityEngine;
 using static AlgorithmBFS;
 
-public class Heap
+public class Heap: MonoBehaviour
 {
     private Tuple<int, int, float>[] priorityQueue;
-    private Dictionary<int, int> hash; // Elemento e id de sua posicao na priorityQueue
+
+    [SerializeField]
+    private int[] hash; // Elemento e id de sua posicao na priorityQueue
     private readonly int max;
     private int last;
 
@@ -17,7 +19,10 @@ public class Heap
         max = _max + 1;
         last = 0;
         priorityQueue = new Tuple<int, int, float>[max];
-        hash = new Dictionary<int, int>();
+        hash = new int[max];
+
+        for (int i = 0; i < max; i++)
+            hash[i] = -1;
     }
 
 
@@ -33,60 +38,60 @@ public class Heap
         set { last = value; }
     }
 
-    public Dictionary<int, int> Hash
+    public int[] Hash
     {
         get { return hash; }
         set { hash = value; }
     }
 
-    public int Enqueue(AlgorithmBFS.NewNode newElement, int father, float distance)
+    public int Enqueue(int element, int father, float distance)
     {
         if (last == max - 1)
             return -1;
 
-        if (hash.ContainsKey(newElement.id))
+        if (hash[element] != -1)
         {
-            if (hash[newElement.id] == -1)
+            if (hash[element] == -2)
             {
-                return 2;
+                return 2; // Ja foi retirado
             }
 
-            if (priorityQueue[hash[newElement.id]].Item3 > distance)
+            if (priorityQueue[hash[element]].Item3 > distance)
             {
-                priorityQueue[hash[newElement.id]] = Tuple.Create(newElement.id, father, distance);
-                int pos = ShiftUp(hash[newElement.id]);
-                hash[newElement.id] = pos;
+                priorityQueue[hash[element]] = Tuple.Create(element, father, distance);
+                int pos = ShiftUp(hash[element]);
+                hash[element] = pos;
 
-                return 0;
+                return 3; // Foi atualizado
             }
 
-            return 1;
+            return 1; // Nao foi atualizado
         }
         else
         {
             last++;
-            priorityQueue[last] = Tuple.Create(newElement.id, father, distance);
+            priorityQueue[last] = Tuple.Create(element, father, distance);
 
             int pos = ShiftUp(last);
-            hash.Add(newElement.id, pos);
-            return 0;
+            hash[element] = pos;
+
+            return 0; // Criado novo no
         }
     }
 
     public Tuple<int, int> Dequeue()
     {
-        if (last == 0)
-            return Tuple.Create(-1, -1);
-
-        Tuple<int, int, float> temp = priorityQueue[1];
-
+        if (last == 0) return Tuple.Create(-1, -1, -1f);
+        
         Swap(1, last);
+        
+        Tuple<int, int, float> temp = priorityQueue[last];
+
         last--;
 
-        Tuple<int, int, float> hashChange = priorityQueue[1];
-        int pos = HeapiFy(1);
-        hash[temp.Item1] = -1;
-        hash[hashChange.Item1] = pos;
+        HeapiFy(1);
+
+        hash[temp.Item1] = -2;
 
         return Tuple.Create(temp.Item1, temp.Item2);
     }
@@ -128,6 +133,9 @@ public class Heap
 
     private void Swap(int a, int b)
     {
+        hash[priorityQueue[a].Item1] = b;
+        hash[priorityQueue[b].Item1] = a;
+
         (priorityQueue[a], priorityQueue[b]) =
             (priorityQueue[b], priorityQueue[a]);
     }

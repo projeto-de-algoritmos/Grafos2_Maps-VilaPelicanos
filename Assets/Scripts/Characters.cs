@@ -11,22 +11,31 @@ public class Characters : MonoBehaviour
     public Game game;
     public Manager manager;
 
-    public void StartChar(List<Node> nodes, Manager _manager)
+    public void StartChar(List<Node> nodes, List<Node> nodes2, Manager _manager)
     {
         manager = _manager;
-        StartCoroutine(Movendo(nodes));
+        StartCoroutine(Movendo(nodes, nodes2, manager.friendship));
     }
 
-    IEnumerator Movendo(List<Node> nodes)
+    IEnumerator Movendo(List<Node> nodes, List<Node> nodes2, float min)
     {
-        foreach (Node node in nodes)
+        for (int i = 0; i < nodes.Count; i++)
         {
-            gameObject.LeanMoveLocal(node.transform.localPosition, 2f/manager.speed).setEaseInOutQuad();
+            gameObject.LeanMoveLocal(nodes[i].transform.localPosition, 2f / manager.speed).setEaseInOutQuad();                                 
+
             yield return new WaitForSeconds(2f/manager.speed);
         }
 
-        yield return new WaitForSeconds(5f);
+        manager.finishChars++;
+
+        while (manager.finishChars != 2)
+            yield return null;
+
+        yield return new WaitForSeconds(3);
+
+        manager.finishChars--;
         Destroy(gameObject);
+
     }
 
     public void SelectedChar()

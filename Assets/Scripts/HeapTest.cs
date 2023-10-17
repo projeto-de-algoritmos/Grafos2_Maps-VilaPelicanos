@@ -7,30 +7,40 @@ public class HeapTest : MonoBehaviour
     private readonly string failTest = "fail";
     private readonly string successTest = "success";
 
-    /*
+    
     private void Start()
     {
         Debug.Log("---- TESTES HEAP ----");
-
+        Debug.Log(TestObj());
         Debug.Log(Test01());
+        /*
         Debug.Log(Test02());
         Debug.Log(Test03());
         Debug.Log(Test04());
         Debug.Log(Test05());
+        */
 
         Debug.Log("-- END TESTES HEAP --");
     }
 
-    private AlgorithmBFS.NewNode CreateElement(float distance)
+    private string TestObj()
     {
-        AlgorithmBFS.NewNode nodeReturn = new(Tuple.Create(new Node(), new Node(), distance), 1);
-        return nodeReturn;
-    }
+        string response = "TestObj: ";
 
-    private AlgorithmBFS.NewNode CreateElement(Node node1, Node node2, float distance)
-    {
-        AlgorithmBFS.NewNode newNode = new(Tuple.Create(node1, node2, distance), 1);
-        return newNode;
+        Node node = new()
+        {
+            Id = 1
+        };
+
+        Node[] array = new Node[2];
+
+        array[0] = node;
+        array[0].Id = 2;
+
+        if (node.Id == 2)
+            return response + successTest;
+
+        return response + failTest;
     }
 
     private string Test01()
@@ -40,32 +50,58 @@ public class HeapTest : MonoBehaviour
         int maxSize = 10;
         Heap heap = new(maxSize);
 
-        heap.Enqueue(CreateElement(3.2f), 3.2f);
-        heap.Enqueue(CreateElement(2.2f), 2.2f);
-        heap.Enqueue(CreateElement(4.0f), 4.0f);
-        heap.Enqueue(CreateElement(4.8f), 4.8f);
-        heap.Enqueue(CreateElement(1.2f), 1.2f);
-        heap.Enqueue(CreateElement(3.9f), 3.9f);
-        heap.Enqueue(CreateElement(4.0f), 4.0f);
-        heap.Enqueue(CreateElement(4.0f), 4.0f);
-        heap.Enqueue(CreateElement(.5f), .5f);
-        heap.Enqueue(CreateElement(9.1f), 9.1f);
+        int result;
 
-        float value = -1;
+        result = heap.Enqueue(1, 2, 3.2f);
+        if (result != 0)
+            return response + failTest + ": 01";
 
-        for (int i = 0; i < maxSize; i++)
-        {
-            float nextValue = heap.Dequeue();
+        result = heap.Enqueue(1, 3, 2.2f);
+        if (result != 3)
+            return response + failTest + ": 02 | " + result;
 
-            if (nextValue < value)
-            {
-                return response + failTest;
-            }
-        }
+        result = heap.Enqueue(3, 2, 4.0f);
+        if (result != 0)
+            return response + failTest + ": 03";
+
+        result = heap.Enqueue(4, 5, 4.8f);
+        if (result != 0)
+            return response + failTest + ": 04";
+
+        result = heap.Enqueue(3, 1, 1.2f);
+        if (result != 3)
+            return response + failTest + ": 05";
+
+        result = heap.Enqueue(4, 1, 8.4f);
+        if (result != 1)
+            return response + failTest + ": 06";
+
+        result = heap.Dequeue().Item1;
+        if (result != 3) return response + failTest + ": 07";
+
+        result = heap.Enqueue(3, 1, 2f);
+        if (result != 2)
+            return response + failTest + ": 08";
+
+        result = heap.Enqueue(3, 1, 0f);
+        if (result != 2)
+            return response + failTest + ": 09";
+
+        result = heap.Dequeue().Item1;
+        if (result != 1) return response + failTest + ": 10";
+
+        result = heap.Enqueue(3, 1, 0f);
+        if (result != 2)
+            return response + failTest + ": 11";
+
+        result = heap.Enqueue(1, 1, 0f);
+        if (result != 2)
+            return response + failTest + ": 12";
 
         return response + successTest;
     }
 
+    /*
     private string Test02()
     {
         string response = "Test02: ";

@@ -28,7 +28,7 @@ public class Game : MonoBehaviour
     public int selectionChar = 1;
     public int selectionText = 1;
 
-    public void CreateCharacter(Node node, List<Node> nodes, int numChar)
+    public void CreateCharacter(Node node, List<Node> nodes, List<Node> nodes2, int numChar)
     {
         GameObject characterInstance = Instantiate(prefabChar, parentChar);
         characterInstance.transform.localPosition = node.gameObject.transform.localPosition;
@@ -46,7 +46,7 @@ public class Game : MonoBehaviour
             charObj02 = characterInstance;
         }
 
-        characterInstance.GetComponent<Characters>().StartChar(nodes, manager);
+        characterInstance.GetComponent<Characters>().StartChar(nodes, nodes2, manager);
     }
 
     public void SelectionCharacter(Characters charac)

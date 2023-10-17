@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,7 +21,7 @@ public class Manager : MonoBehaviour
     public Game game;
 
     public Slider speedSlider;
-    public float speed = 1;
+    public float speed = 5;
     public TextMeshProUGUI speedValue;
 
     public List<Node> graph;
@@ -31,6 +32,8 @@ public class Manager : MonoBehaviour
     public float friendship;
     public Slider slider;
     public TextMeshProUGUI valueFriendship;
+    public GameObject noPath;
+    public int finishChars = 0;
 
     [SerializeField]
     public int[][] matrixAdj;
@@ -57,18 +60,18 @@ public class Manager : MonoBehaviour
 
     void UpdateSpeedValue(float newValue)
     {
-        speed = ((int)newValue);
-        speedValue.text = speed.ToString();
+        speed = newValue;
+        speedValue.text = Math.Round(speed, 1).ToString();
     }
 
     public void StartGame()
     {
         Tuple<Node, Node> startNode = Tuple.Create(startCharacter01, startCharacter02);
         Tuple<Node, Node> endNode = Tuple.Create(endCharacter01, endCharacter02);
-        Stack<AlgorithmBFS.NewNode> nodes = algorithBFS.MST(startNode, endNode, friendship);
+        List<AlgorithmBFS.NewNode> nodes = algorithBFS.MST(startNode, endNode, friendship);
         List<Node> path1 = new List<Node>();
         List<Node> path2 = new List<Node>();
-
+        
         foreach (AlgorithmBFS.NewNode node in nodes)
         {
             path1.Add(node.node.Item1);
@@ -77,12 +80,21 @@ public class Manager : MonoBehaviour
 
         if (nodes.Count != 0)
         {
-            game.CreateCharacter(path1[0], path1, 1);
-            game.CreateCharacter(path2[0], path2, 2);
+            game.CreateCharacter(path1[0], path1, path2, 1);
+            game.CreateCharacter(path2[0], path2, path1, 2);
         }
+        else
+            StartCoroutine(OpenErrorMessage());
     }
 
-    // Função chamada quando o valor do slider é alterado.
+    IEnumerator OpenErrorMessage()
+    {
+        noPath.SetActive(true);
+        yield return new WaitForSeconds(5f);
+        noPath.SetActive(false);
+    }
+
+    // Funï¿½ï¿½o chamada quando o valor do slider ï¿½ alterado.
     void UpdateSliderValue(float newValue)
     {
         friendship = ((int)newValue);
@@ -102,8 +114,6 @@ public class Manager : MonoBehaviour
             secury++;
             DestroyImmediate(manager.parentEdge.GetChild(0).gameObject);
         }
-
-        Debug.Log("Delete complete");
     }
     public static void SetEdges(Manager manager)
     {
@@ -189,7 +199,5 @@ public class Manager : MonoBehaviour
                 }
             }
         }
-
-        Debug.Log("SetEdge complete");
     }
 }
