@@ -73,7 +73,6 @@ public class AlgorithmBFS : MonoBehaviour
         Queue<NewNode> queue = new();
         queue.Enqueue(newNode);
 
-
         while (queue.Any())
         {
             newNode = queue.Dequeue();
@@ -147,8 +146,6 @@ public class AlgorithmBFS : MonoBehaviour
 
             }
 
-            // PrintHeap(heap);
-
             if (node.node.Item1.Id == end.Item1.Id && node.node.Item2.Id == end.Item2.Id)
             {
                 List<NewNode> path = new();
@@ -199,6 +196,8 @@ public class AlgorithmBFS : MonoBehaviour
 
     public List<NewNode> MST(Tuple<Node, Node> start, Tuple<Node, Node> end, float minDistance)
     {
+        newGraph = new();
+
         Filter(manager.graph, start.Item1, start.Item2, minDistance);
 
         return Dijkstra(start, end);

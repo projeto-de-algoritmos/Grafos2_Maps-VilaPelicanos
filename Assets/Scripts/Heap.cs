@@ -79,7 +79,7 @@ public class Heap: MonoBehaviour
         }
     }
 
-    public Tuple<int, int> Dequeue()
+    public Tuple<int, int, float> Dequeue()
     {
         if (last == 0) return Tuple.Create(-1, -1, -1f);
         
@@ -93,7 +93,7 @@ public class Heap: MonoBehaviour
 
         hash[temp.Item1] = -2;
 
-        return Tuple.Create(temp.Item1, temp.Item2);
+        return Tuple.Create(temp.Item1, temp.Item2, temp.Item3);
     }
 
     private int ShiftUp(int pos)

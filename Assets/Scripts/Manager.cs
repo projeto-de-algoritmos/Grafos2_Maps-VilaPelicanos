@@ -29,7 +29,7 @@ public class Manager : MonoBehaviour
     public Node endCharacter01;
     public Node startCharacter02;
     public Node endCharacter02;
-    public float friendship;
+    public float friendship = 200;
     public Slider slider;
     public TextMeshProUGUI valueFriendship;
     public GameObject noPath;
@@ -94,7 +94,7 @@ public class Manager : MonoBehaviour
         noPath.SetActive(false);
     }
 
-    // Funï¿½ï¿½o chamada quando o valor do slider ï¿½ alterado.
+    // Função chamada quando o valor do slider é alterado.
     void UpdateSliderValue(float newValue)
     {
         friendship = ((int)newValue);
