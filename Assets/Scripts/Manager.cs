@@ -65,13 +65,21 @@ public class Manager : MonoBehaviour
     {
         Tuple<Node, Node> startNode = Tuple.Create(startCharacter01, startCharacter02);
         Tuple<Node, Node> endNode = Tuple.Create(endCharacter01, endCharacter02);
-        // List<AlgorithmBFS.NewNode> nodes = algorithBFS.MST(startNode, endNode, friendship);
+        Stack<AlgorithmBFS.NewNode> nodes = algorithBFS.MST(startNode, endNode, friendship);
+        List<Node> path1 = new List<Node>();
+        List<Node> path2 = new List<Node>();
 
+        foreach (AlgorithmBFS.NewNode node in nodes)
+        {
+            path1.Add(node.node.Item1);
+            path2.Add(node.node.Item2);
+        }
 
-        // if (nodes.Count != 0)
-            // game.CreateCharacter(nodes[0], nodes);
-
-        
+        if (nodes.Count != 0)
+        {
+            game.CreateCharacter(path1[0], path1, 1);
+            game.CreateCharacter(path2[0], path2, 2);
+        }
     }
 
     // Função chamada quando o valor do slider é alterado.

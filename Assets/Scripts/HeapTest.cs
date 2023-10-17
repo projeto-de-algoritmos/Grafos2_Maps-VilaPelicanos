@@ -7,6 +7,7 @@ public class HeapTest : MonoBehaviour
     private readonly string failTest = "fail";
     private readonly string successTest = "success";
 
+    /*
     private void Start()
     {
         Debug.Log("---- TESTES HEAP ----");
@@ -182,4 +183,5 @@ public class HeapTest : MonoBehaviour
         return response + failTest;
 
     }
+    */
 }
