@@ -19,37 +19,37 @@ public class AlgorithmBFS : MonoBehaviour
     public struct NewNode
     {
         public int id;
-        public Tuple<Node, Node, float> node;
-        public List<NewNode> nodesAdj;
+        public Tuple<Node, Node> node;
+        public Dictionary<NewNode, float> nodesAdj;
 
-        public NewNode(Tuple<Node, Node, float> _node, int _id)
+        public NewNode(Tuple<Node, Node> _node, int _id)
         {
             node = _node;
-            nodesAdj = new List<NewNode>();
+            nodesAdj = new Dictionary<NewNode, float>();
             id = _id;
         }
 
     }
 
-    private Tuple<int, NewNode> Add_Node(Node node1, Node node2, float edgeSize)
+    private Tuple<int, NewNode> Add_Node(Node node1, Node node2)
     {
-        Tuple<Node, Node, float> node = Tuple.Create(node1, node2, edgeSize);
+        Tuple<Node, Node> node = Tuple.Create(node1, node2);
 
         NewNode newNode = new NewNode(node, newGraph.Count);
 
-        if (matrixAdj[node1.Id][node2.Id].id == -1) // mudar para algo O(1) | Mudado!
+        if (matrixAdj[node1.Id][node2.Id].id == -1) 
         {
             newGraph.Add(newNode);
             return Tuple.Create(1, newNode);
         }
-        // mudar a matriz para NewNode para armazenar o obj
+
         return Tuple.Create(-1, matrixAdj[node1.Id][node2.Id]);
     }
 
-    private void Add_Edge(NewNode node1, NewNode node2)
+    private void Add_Edge(NewNode node1, NewNode node2, float edgeSize)
     {
-        if (!node1.nodesAdj.Contains(node2))
-            node1.nodesAdj.Add(node2);
+        if (!node1.nodesAdj.Keys.Contains(node2))
+            node1.nodesAdj.Add(node2, edgeSize);
     }
 
     public void Filter(List<Node> graph, Node s, Node t, float min)
@@ -68,7 +68,7 @@ public class AlgorithmBFS : MonoBehaviour
             }
         }
 
-        NewNode newNode = Add_Node(s, t, 0).Item2;
+        NewNode newNode = Add_Node(s, t).Item2;
 
         Queue<NewNode> queue = new();
         queue.Enqueue(newNode);
@@ -80,9 +80,8 @@ public class AlgorithmBFS : MonoBehaviour
             s = newNode.node.Item1;
             t = newNode.node.Item2;
 
-            for (Node node = s, node2 = t; ; node = t, node2 = s)
+            for (Node node = s; ; node = t)
             {
-
                 foreach (KeyValuePair<Node, float> nodeAdj in node.Edges)
                 {
                     Tuple<int, NewNode> no;
@@ -92,7 +91,7 @@ public class AlgorithmBFS : MonoBehaviour
                         float path = Distance(nodeAdj.Key, t);
                         if (path < min) continue;
 
-                        no = Add_Node(nodeAdj.Key, t, nodeAdj.Value);
+                        no = Add_Node(nodeAdj.Key, t);
                         if (no.Item1 != -1)
                         {
                             matrixAdj[nodeAdj.Key.Id][t.Id] = no.Item2;
@@ -104,7 +103,7 @@ public class AlgorithmBFS : MonoBehaviour
                         float path = Distance(s, nodeAdj.Key);
                         if (path < min) continue;
 
-                        no = Add_Node(s, nodeAdj.Key, nodeAdj.Value);
+                        no = Add_Node(s, nodeAdj.Key);
 
                         if (no.Item1 != -1)
                         {
@@ -112,8 +111,8 @@ public class AlgorithmBFS : MonoBehaviour
                             queue.Enqueue(no.Item2);
                         }
                     }
+                    Add_Edge(newNode, no.Item2, nodeAdj.Value);
 
-                    Add_Edge(newNode, no.Item2);                    
                 }
 
                 if (node.Equals(t)) break;
@@ -134,17 +133,9 @@ public class AlgorithmBFS : MonoBehaviour
         {
             Tuple<int, int, float> ids = heap.Dequeue();
 
-            if (MST.ContainsKey(ids.Item1)) return new List<NewNode>();
             MST.Add(ids.Item1, ids.Item2);
 
-            NewNode node = newGraph[ids.Item1];
-
-            foreach (NewNode edge in node.nodesAdj)
-            {
-                float newDistance = ids.Item3 + edge.node.Item3;
-                heap.Enqueue(edge.id, node.id, newDistance);
-
-            }
+            NewNode node = newGraph[ids.Item1];            
 
             if (node.node.Item1.Id == end.Item1.Id && node.node.Item2.Id == end.Item2.Id)
             {
@@ -160,19 +151,20 @@ public class AlgorithmBFS : MonoBehaviour
                 path.Insert(0, newGraph[three]);
                 return path;
             }
+
+            foreach (KeyValuePair<NewNode,float> edge in node.nodesAdj)
+            {
+                float newDistance = ids.Item3 + edge.Value;
+                heap.Enqueue(edge.Key.id, node.id, newDistance);
+            }
         }
 
         return new List<NewNode>(); // nao achou um caminho possivel em que nao se encontrassem
     }
 
-    private float Distance(Tuple<Node, Node> element)
-    {
-        return Vector2.Distance(element.Item1.transform.position, element.Item2.transform.position);
-    }
-
     private float Distance(Node node1, Node node2)
     {
-        return Vector2.Distance(node1.transform.position, node2.transform.position);
+        return DistanceNode.Distance(node1.transform.localPosition, node2.transform.localPosition);
     }
 
     public void Start()

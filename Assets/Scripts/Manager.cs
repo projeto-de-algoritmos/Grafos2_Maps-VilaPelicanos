@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class Manager : MonoBehaviour
 {
+    public TextMeshProUGUI debug;
+
     [SerializeField]
     public Image edgePrefab;
 
@@ -47,6 +49,11 @@ public class Manager : MonoBehaviour
         graph ??= new List<Node>();
 
         SetEdges(this);
+
+        debug.text += "Node 52: " + graph[52].transform.localPosition + "\n";
+        debug.text += "Node 49: " + graph[49].transform.localPosition + "\n";
+        float result = DistanceNode.Distance(graph[52].transform.localPosition, graph[49].transform.localPosition, this);
+        debug.text += "result2: " + result + "\n";
 
         foreach (Node node in graph)
         {
@@ -106,7 +113,7 @@ public class Manager : MonoBehaviour
         Application.Quit();
     }
 
-    public static void DeleteEdges(Manager manager)
+    public void DeleteEdges(Manager manager)
     {
         int secury = 0;
         while (manager.parentEdge.childCount > 0 && secury < 500)
@@ -115,7 +122,7 @@ public class Manager : MonoBehaviour
             DestroyImmediate(manager.parentEdge.GetChild(0).gameObject);
         }
     }
-    public static void SetEdges(Manager manager)
+    public void SetEdges(Manager manager)
     {
         DeleteEdges(manager);
 
@@ -133,7 +140,7 @@ public class Manager : MonoBehaviour
                         continue;
                     }
 
-                    float distance = Vector2.Distance(adj.transform.position, node.transform.position);
+                    float distance = DistanceNode.Distance(adj.transform.localPosition, node.transform.localPosition);
                     node.AddEdge(adj, distance);
                     if (!adj.nodesAdj.Contains(node))
                         adj.nodesAdj.Add(node);
@@ -182,13 +189,16 @@ public class Manager : MonoBehaviour
 
                 if (manager.matrixAdj[adjNodeId][currentNodeId] != 1)
                 {
+                    
                     Vector3 position = (node.transform.localPosition + adjNode.transform.localPosition) / 2f;
 
-                    float distance = Vector3.Distance(node.transform.localPosition, adjNode.transform.localPosition);
+                    float distance = DistanceNode.Distance(node.transform.localPosition, adjNode.transform.localPosition);
 
                     Image edgeImage = Instantiate(manager.edgePrefab, position, Quaternion.identity);
 
-                    edgeImage.rectTransform.sizeDelta = new Vector2(distance - 20, 4f);
+                    edgeImage.rectTransform.sizeDelta = new Vector2(distance, 4f);
+
+                   
 
                     edgeImage.transform.SetParent(manager.parentEdge);
                     edgeImage.transform.localPosition = position;
@@ -196,6 +206,7 @@ public class Manager : MonoBehaviour
                     Vector3 direction = (adjNode.transform.localPosition - node.transform.localPosition).normalized;
                     float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
                     edgeImage.rectTransform.rotation = Quaternion.Euler(0f, 0f, angle);
+                    edgeImage.rectTransform.localScale = Vector3.one;
                 }
             }
         }
