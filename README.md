@@ -14,11 +14,11 @@ Os habitantes da Vila Pelicanos precisam constantemente se locomover o mais ráp
 
 ## Screenshots
 Tela inicial para seleção dos dados, em caso de dúvidas ver sessão de Uso
-![imagem1](Assets/Images/1.jpeg)
+![imagem1](Assets/Images/1.png)
 Tela com os dados selecionados 
-![imagem1](Assets/Images/2.jpeg)
+![imagem1](Assets/Images/2.png)
 Menu de configurações
-![imagem1](Assets/Images/3.jpeg)
+![imagem1](Assets/Images/3.png)
 
 ## Instalação 
 **Linguagem**: C#<br>
